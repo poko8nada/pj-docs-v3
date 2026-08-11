@@ -1,0 +1,57 @@
+# プロジェクトスターター
+
+![Version](https://img.shields.io/badge/version-0.1.0-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
+![Status](https://img.shields.io/badge/status-template-lightgrey)
+![Node](https://img.shields.io/badge/node-%3E%3D18-brightgreen?logo=node.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue?logo=typescript)
+![pnpm](https://img.shields.io/badge/pnpm-managed-F69220?logo=pnpm&logoColor=white)
+
+## Overview
+
+TypeScript ベースのプロジェクトスターターです。oxlint / oxfmt（Lint / Format）、Vitest（Test）、Lefthook（Git hooks）が揃っています。テンプレとして複製し、任意のスタックを追加していく想定です。エージェントスキルハーネス（.opencode/skills によるドキュメント駆動開発基盤）も含みますが、現在作成中です。
+
+## Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) 18 以上（LTS 推奨）
+- [pnpm](https://pnpm.io/)
+
+### Installation
+
+1. テンプレとしてリポジトリを複製するか、GitHub の Use this template でコピーする。
+2. [`package.json`](package.json) の `name` などをプロジェクト用に変更する。
+3. 依存をインストールする（`prepare` で Lefthook が入る）。
+
+```bash
+pnpm install
+```
+
+アプリが未整備でも、TypeScript とツールだけなら次で検証できる。
+
+```bash
+pnpm typecheck
+pnpm lint
+pnpm format:check
+pnpm test:run
+```
+
+## Usage
+
+- `pnpm build` — `tsc` で TypeScript をコンパイル（出力先: `dist/`）
+- `pnpm clean` — `dist/` を削除
+- `pnpm test` / `pnpm test:run` — Vitest（ウォッチ / 一回）
+- `pnpm lint` / `pnpm lint:fix` — oxlint
+- `pnpm format` / `pnpm format:check` — oxfmt
+- `pnpm typecheck` — `tsc --noEmit`
+
+## Contributing
+
+- コミット前に Lefthook が staged ファイルへ format / lint を実行する（対象: `*.{js,jsx,ts,tsx,mjs,cjs}`）。typecheck は `*.{ts,tsx}` のみ。
+- プッシュ前に `pnpm typecheck`（全量）と、未解決の `NOTE:` コメントがないことのチェックが走る。
+- 方針の大きな変更は Issue か PR 説明で共有するとよい。
+
+## License
+
+MIT

@@ -1,0 +1,44 @@
+pre-commit:
+  jobs:
+    - name: checks
+      group:
+        parallel: true
+        jobs:
+          - name: format
+            glob: '*.{js,jsx,ts,tsx,mjs,cjs,md,mdx,json,jsonc}'
+            run: pnpm format {staged_files}
+            stage_fixed: true
+            fail_text: 'Format auto-fixed. Re-stage and re-commit if needed (stage_fixed usually handles this).'
+          - name: lint
+            glob: '*.{js,jsx,ts,tsx,mjs,cjs}'
+            run: pnpm lint {staged_files}
+            fail_text: 'Lint failed. Run: pnpm lint:fix for details. Fix the code, not the config.'
+          - name: typecheck
+            glob: '*.{ts,tsx}'
+            run: pnpm typecheck:staged {staged_files}
+            fail_text: 'Type check failed. Run: pnpm typecheck:staged for details.'
+    - name: remove-done-notes
+      run: node scripts/remove-done-notes.mjs
+      stage_fixed: true
+      fail_text: 'Done notes removed. Re-stage and re-commit if needed (stage_fixed usually handles this).'
+    - name: validate-products
+      run: node scripts/validate-products.mjs
+      fail_text: 'products/ snapshots are invalid. Fix the format or consistency before committing.'
+    - name: confirm-note-removals
+      run: node scripts/list-removed.mjs
+      fail_text: 'Removed NOTE lines need confirmation. Review them with the user before committing.'
+
+pre-push:
+  commands:
+    pending-notes:
+      run: |
+        if rg -n '^[[:space:]]*(//|#|/\*)[[:space:]]*NOTE:' . \
+          --glob '!node_modules/**' --glob '!.git/**' --glob '!dist/**' \
+          --glob '!.cursor/skills/**' --glob '!lefthook.yaml' --glob '!.opencode/**'; then
+          echo "× Pending NOTE comments:"
+          exit 1
+        fi
+      fail_text: 'Resolve or remove all NOTE: comments before pushing.'
+    typecheck:
+      run: pnpm typecheck
+      fail_text: 'Type check failed. Run: pnpm typecheck for details.'

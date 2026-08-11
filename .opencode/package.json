@@ -1,0 +1,11 @@
+{
+  "name": "opencode-plugins",
+  "private": true,
+  "dependencies": {
+    "@opencode-ai/plugin": "1.18.15"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "minimatch": "latest"
+  }
+}

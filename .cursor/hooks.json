@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "node .cursor/hooks/main.mjs sessionStart"
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": "node .cursor/hooks/main.mjs sessionEnd"
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "node .cursor/hooks/main.mjs preToolUse"
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": "node .cursor/hooks/main.mjs postToolUse"
+      }
+    ],
+    "postToolUseFailure": [
+      {
+        "command": "node .cursor/hooks/main.mjs postToolUseFailure"
+      }
+    ],
+    "subagentStart": [
+      {
+        "command": "node .cursor/hooks/main.mjs subagentStart"
+      }
+    ],
+    "subagentStop": [
+      {
+        "command": "node .cursor/hooks/main.mjs subagentStop"
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "node .cursor/hooks/main.mjs beforeShellExecution"
+      }
+    ],
+    "afterShellExecution": [
+      {
+        "command": "node .cursor/hooks/main.mjs afterShellExecution"
+      }
+    ],
+    "beforeMCPExecution": [
+      {
+        "command": "node .cursor/hooks/main.mjs beforeMCPExecution"
+      }
+    ],
+    "afterMCPExecution": [
+      {
+        "command": "node .cursor/hooks/main.mjs afterMCPExecution"
+      }
+    ],
+    "beforeReadFile": [
+      {
+        "command": "node .cursor/hooks/main.mjs beforeReadFile"
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": "node .cursor/hooks/main.mjs afterFileEdit"
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": "node .cursor/hooks/main.mjs beforeSubmitPrompt"
+      }
+    ],
+    "preCompact": [
+      {
+        "command": "node .cursor/hooks/main.mjs preCompact"
+      }
+    ],
+    "stop": [
+      {
+        "command": "node .cursor/hooks/main.mjs stop",
+        "loop_limit": 3
+      }
+    ],
+    "afterAgentResponse": [
+      {
+        "command": "node .cursor/hooks/main.mjs afterAgentResponse"
+      }
+    ],
+    "afterAgentThought": [
+      {
+        "command": "node .cursor/hooks/main.mjs afterAgentThought"
+      }
+    ]
+  }
+}
