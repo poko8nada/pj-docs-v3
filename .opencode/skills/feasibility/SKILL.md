@@ -24,4 +24,4 @@ Evaluates the technical feasibility of a proposed approach and records the resul
 
 - Do not modify the findings content; only fill `context`.
 - The document format is owned by the sub-agent. Do not get involved in it.
-- If the finding is adopted, propose next steps (e.g., product update via the product skill, note via the interpret skill).
+- If the finding is adopted, propose next steps (e.g., product update via the product skill, charter the change via the charter skill).

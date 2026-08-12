@@ -1,6 +1,9 @@
 # Features granularity guide
 
-A feature is a capability unit that can be implemented and verified independently. Feature names use the `F-<domain>.<sub>` form (e.g., `F-auth.login`). Do not use sequential numbers (F-01): functional names keep existing IDs stable across additions, reordering, and splits.
+A feature is a capability unit that can be implemented and verified independently. Naming rules:
+
+- Feature names use the `F-<domain>.<sub>` form (e.g., `F-auth.login`).
+- Do not use sequential numbers (F-01): functional names keep existing IDs stable across additions, reordering, and splits.
 
 ## Granularity judgment (three questions)
 

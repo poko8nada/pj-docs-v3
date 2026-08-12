@@ -1,6 +1,6 @@
 # Test decision guide
 
-Decides whether tests are needed for the discussed work. Applied during interpretation, when writing constraints.
+Decides whether tests are needed for the discussed work. Applied during chartering, when the proposal is compiled.
 
 ## Required when applicable
 

@@ -38,11 +38,11 @@ changed:
 
 ## D-look: Look
 
-- <フロント上の見た目の方向性・特徴（自由記述・一言に限らない）>
+- <frontend look direction and traits; free-form, not limited to one line>
 - <why: 1-3 bullets>
-- Path: findings/look-workshop/<slug>.html（look-workshop で確定した場合のみ追記）
+- Path: findings/look-workshop/<slug>.html (append only when the look is locked via look-workshop)
 
-frontend: false のプロダクト（API / DB / library / CLI）ではこのセクションを省略する。
+For products with `frontend: false` (API / DB / library / CLI), omit this section.
 
 ## D-stack: Stack
 
@@ -64,7 +64,7 @@ frontend: false のプロダクト（API / DB / library / CLI）ではこのセ�
 - MVP: <how it ships>
 - Next: <how it ships>
 
-見出し名はタイプに合わせる（ID は B-deploy のまま）: web app / API は Deploy、library / CLI は Publish。
+Match the heading to the type (the ID stays `B-deploy`): web app / API → Deploy, library / CLI → Publish.
 
 ## B-scope: Scope
 

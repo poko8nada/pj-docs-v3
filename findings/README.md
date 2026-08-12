@@ -9,7 +9,7 @@ Accumulated evaluation and review records. Append-only: the findings content is 
 
 ## Flow
 
-1. The skill launches its dedicated sub-agent (`.opencode/agent/feasibility.md` or `.opencode/agent/review.md`).
+1. The skill launches its dedicated sub-agent
 2. The sub-agent creates the finding file with `date` set and `context` blank.
 3. The main agent reads the file, discusses with the user, and fills `context` with the outcome (decision and reasoning).
 

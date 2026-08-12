@@ -1,4 +1,8 @@
-#!/usr/bin/env node
+/*
+ * FEATURES: S-serve
+ * PURPOSE: look-workshop 作業場の Vite 開発サーバーを起動し、cmux でブラウザを開く (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
 // foundation dev — 作業場を Vite で起動し、準備できたら cmux で開く。
 // Ctrl-C で Vite ごと終了。ルートの package.json は触らない。
 import { spawn, spawnSync } from 'node:child_process';

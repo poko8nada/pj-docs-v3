@@ -1,4 +1,8 @@
-#!/usr/bin/env node
+/*
+ * FEATURES: S-sync
+ * PURPOSE: opencode と Cursor のスキルディレクトリを双方向同期する (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
 /**
  * Cursor と opencode のスキルを双方向同期するスクリプト（プロジェクト同士）
  *

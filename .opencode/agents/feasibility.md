@@ -1,9 +1,8 @@
 ---
 description: Evaluates the technical feasibility of a proposed approach and writes a structured finding to findings/feasibility/.
 mode: subagent
-model: opencode/deepseek-v4-flash-free
 temperature: 0.1
-reasoningEffort: max
+reasoningEffort: low
 steps: 8
 permission:
   read: allow
@@ -71,22 +70,22 @@ context:
 
 ## R-what: Request
 
-- Target: <評価対象>
-- Background: <なぜこの評価か>
-- Constraints: <前提・制約条件>
+- Target: <target>
+- Background: <reason>
+- Constraints: <constraints>
 
 ## F-<n>: Finding <n>
 
-- Finding: <発見内容>
-- Impact: <影響>
-- Risk: <リスク>
-- Recommendation: <推奨>
-- Source: <出典URL>
+- Finding: <finding>
+- Impact: <impact>
+- Risk: <risk>
+- Recommendation: <recommendation>
+- Source: <source URL>
 
 ## A-verdict: Assessment
 
 - Verdict: <viable / not viable / conditional>
-- Reason: <判定理由>
+- Reason: <judgment reason>
 
 ## Return
 

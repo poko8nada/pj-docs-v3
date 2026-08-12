@@ -1,4 +1,8 @@
-#!/usr/bin/env node
+/*
+ * FEATURES: S-build
+ * PURPOSE: look-workshop 作業場を singlefile HTML にビルドし、findings/ へ出力する (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
 // foundation build — chrome 無し Vite build（singlefile）→ findings/foundation/<slug>.html
 // 画像など外出し資産は findings/foundation/assets/ へマージ（既存は残す・同名は上書き）。
 // 作業場（index.html / comments.json）は変更しない。

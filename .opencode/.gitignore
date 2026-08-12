@@ -1,0 +1,7 @@
+node_modules
+package-lock.json
+bun.lock
+skill-trigger/
+
+# temp (check 実行時の一時ファイル)
+.qg-tsconfig-*.json

@@ -10,18 +10,25 @@ Reviews code, design, or documents and records the result as an append-only find
 ## Procedure
 
 1. Understand the request: what to review and the review scope.
-2. Launch the review sub-agent **in the background** via the Task tool (`subagent_type: review`), passing a mission prompt with exactly three fields. The sub-agent obtains the changes itself via `git diff`; do not pass the diff:
-   - Target: <what to review>
-   - Background: <why this review>
-   - Constraints: <review scope and assumptions>
-3. When the sub-agent finishes, it has created `findings/review/YYYY-MM-DD-<seq>.md` with `context` blank.
-4. Read the created file and present the findings to the user.
-5. Discuss with the user and obtain the outcome (adopt / reject / pending).
-6. Fill the `context` field in the frontmatter with the outcome and reasoning.
-7. Report the file path and the outcome.
+2. Categorize file changes by area of concern. For each area, count the diff lines with `node scripts/diff-count.mjs <files...>` (add `--cached` for staged changes), then propose to the user with this format:
+   - `<Area>: <files> — diff: <N> lines`
+   - `<concern or rationale>`
+   - Split any area with `diff > 500 lines` into sub-areas, and list the diff lines for each sub-area as well.
+3. For each finalized area or sub-area, launch **one or more** review sub-agents **in the background.**
+   - Before launching, assign each sub-agent a unique output file: list `findings/review/` and allocate `YYYY-MM-DD-<seq>.md` in order (001, 002, ...).
+   - When doing so, provide a mission prompt containing only the following four fields (do not pass the diff itself, as the sub-agent will retrieve the changes using `git diff`):
+     - Target: <what to review>
+     - Background: <why this review>
+     - Constraints: <review scope and assumptions>
+     - Output: <assigned file path>
+4. When the sub-agent finishes, it has created the assigned `findings/review/YYYY-MM-DD-<seq>.md` with `context` blank.
+5. Read the created file and present the findings to the user.
+6. Discuss with the user and obtain the outcome (adopt / reject / pending).
+7. Fill the `context` field in the frontmatter with the outcome and reasoning.
+8. Report the file path and the outcome.
 
 ## Rules
 
 - Do not modify the findings content; only fill `context`.
 - The document format is owned by the sub-agent. Do not get involved in it.
-- If the finding is adopted, propose next steps (e.g., product update via the product skill, note via the interpret skill).
+- If the finding is adopted, propose next steps (e.g., product update, charter the change).

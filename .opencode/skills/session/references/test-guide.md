@@ -1,6 +1,6 @@
 # Test execution guide
 
-How to verify a slice. Applies to the `Test` column of the session slice. Whether tests are needed was decided during interpretation (interpret skill's test-guide).
+How to verify a slice. Applies to the `Test` column of the session slice. Whether tests are needed was decided during chartering (charter skill's test-guide).
 
 ## Test angles
 

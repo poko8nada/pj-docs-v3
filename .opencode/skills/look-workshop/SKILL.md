@@ -48,7 +48,7 @@ Stable key from element → comment row. Prefer hosts that can take children; wr
 ```
 look-workshop/
 ├── SKILL.md
-├── defaults/index.html   # defaults for new index.html（copy to workspace when dev/build）
+├── defaults/index.html   # defaults for new index.html (copied to workspace on dev/build)
 ├── scripts/{dev,build,reset,_paths}.mjs
 └── workspace/            # Vite workbench — not source of truth
 ```

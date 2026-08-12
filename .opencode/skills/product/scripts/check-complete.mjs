@@ -1,4 +1,8 @@
-#!/usr/bin/env node
+/*
+ * FEATURES: S-verify
+ * PURPOSE: プロダクト作業ドキュメントの完成度（必須セクション・F-* 定義）を検証する (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
 /**
  * 作業ドキュメント（1件目）の完成度を確認する。
  * productスキルの Create 手順の最後にエージェントが実行する。

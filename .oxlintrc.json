@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["import", "jsx-a11y", "oxc", "react", "typescript", "unicorn"],
+  "plugins": ["import", "jsx-a11y", "oxc", "react", "typescript", "unicorn", "eslint"],
   "categories": {
     "correctness": "error",
     "suspicious": "warn",
@@ -12,6 +12,15 @@
   "rules": {
     "curly": "error",
     "eqeqeq": "error",
+    "max-lines-per-function": [
+      "error",
+      {
+        "max": 80,
+        "skipBlankLines": true,
+        "skipComments": true
+      }
+    ],
+    "max-params": ["error", 4],
     "no-console": "allow",
     "no-empty": "error",
     "no-undef": "error",
@@ -47,6 +56,13 @@
     "node": true
   },
   "overrides": [
+    {
+      "files": ["**/*.{test,spec}.{ts,tsx,js,jsx,mjs,cjs}"],
+      "rules": {
+        "no-empty": "off",
+        "unicorn/no-empty-file": "off"
+      }
+    },
     {
       "files": ["src/**/*.{ts,tsx}", "app/**/*.{ts,tsx}", "pages/**/*.tsx"],
       "rules": {

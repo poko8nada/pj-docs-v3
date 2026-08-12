@@ -5,7 +5,10 @@ description: Manage the product definition stored in products/. Use when the pro
 
 # product
 
-The product definition lives in `products/` as append-only snapshots: what the project is, what it will build, and how it is verified. The latest snapshot is the current state. The user owns every decision in it. The agent proposes; the user decides.
+The product definition lives in `products/` as append-only snapshots: what the project is, what it will build, and how it is verified. The latest snapshot is the current state. Decision authority:
+
+- The user owns every decision in it.
+- The agent proposes; the user decides.
 
 ## Decision authority
 
@@ -36,12 +39,22 @@ Goal ←→ Discover → Build
 ### Create (no definition yet)
 
 1. Confirm `products/` has no snapshots.
-2. Read `products/README.md` (format), `references/product-template.md` (structure), `references/features-guide.md` and `references/test-guide.md` (content guides).
+2. Read the format and guides:
+   - `products/README.md` (format)
+   - `references/product-template.md` (structure)
+   - `references/features-guide.md` and `references/test-guide.md` (content guides)
 3. Create the working document `products/YYYY-MM-DD-001.md` and build it by layer. Each layer is an agreement checkpoint: propose → discuss → obtain explicit agreement → write the agreed sections.
    - **Goal layer** (G-what / G-outcome / G-nongoal): proposes a provisional outcome and boundary. It is confirmed after Discover.
-   - **Discover layer** (D-name / D-look / D-stack + features): the main work. Defines the product; may revise the Goal layer. D-look applies only when the product has a frontend (`frontend: true` in D-stack). Use `references/features-guide.md` for Features granularity.
-   - **Build layer** (B-roadmap / B-test / B-deploy / B-scope): follows from Discover. B-deploy heading is `Deploy` for web apps/APIs and `Publish` for libraries/CLIs (the ID stays `B-deploy`). Use `references/test-guide.md` for the B-test section.
-4. At the end, run the completeness check: `node scripts/check-complete.mjs` (from this skill's directory). It verifies the working document has every required section ID and at least one feature, and that no snapshot #2+ exists before that. Only when it passes, freeze the working document as v1.
+   - **Discover layer** (D-name / D-look / D-stack + features): the main work.
+     - Defines the product; may revise the Goal layer.
+     - D-look applies only when the product has a frontend (`frontend: true` in D-stack).
+     - Use `references/features-guide.md` for Features granularity.
+   - **Build layer** (B-roadmap / B-test / B-deploy / B-scope): follows from Discover.
+     - B-deploy heading is `Deploy` for web apps/APIs and `Publish` for libraries/CLIs (the ID stays `B-deploy`).
+     - Use `references/test-guide.md` for the B-test section.
+4. At the end, run the completeness check: `node scripts/check-complete.mjs` (from this skill's directory).
+   - It verifies the working document has every required section ID and at least one feature, and that no snapshot #2+ exists before that.
+   - Only when it passes, freeze the working document as v1.
 
 ### Update
 
@@ -54,10 +67,10 @@ Goal ←→ Discover → Build
    - Fill the frontmatter: `date`, `context` (why), `changed` (the section IDs that changed).
 5. Report the changed sections and the new snapshot name.
 
-## Relationship to notes
+## Relationship to charted headers
 
-- Notes reference product sections via `REF: <section ID>` (e.g., `REF: F-auth.login`, `REF: B-deploy`).
-- When a section is renamed, split, or removed, check notes that REF it and propose updates.
+- Code headers reference product sections via `FEATURES: <section ID>` (e.g., `FEATURES: F-auth.login`, `FEATURES: B-deploy`).
+- When a section is renamed, split, or removed, check headers that reference it and propose updates.
 
 ## Limits
 
