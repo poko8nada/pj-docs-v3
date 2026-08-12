@@ -1,7 +1,13 @@
+/*
+ * FEATURES: H-mutator
+ * PURPOSE: 編集直後のファイルを oxfmt で整形する (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
 import { FORMAT_EXTENSIONS, hasExtension } from '../lib/file-extensions.mjs';
 import { filterProjectPaths } from '../lib/allowed-paths.mjs';
 import { runCommand } from '../lib/run-command.mjs';
 import { hasFormatTooling } from '../lib/tooling.mjs';
+import { isRecord, normalizeToolInput } from '../lib/tool-input.mjs';
 
 export const name = 'format';
 
@@ -58,26 +64,6 @@ export function extractEditedPaths(hookName, input) {
   return [];
 }
 
-function normalizeToolInput(value) {
-  if (isRecord(value)) {
-    return value;
-  }
-  if (typeof value !== 'string') {
-    return undefined;
-  }
-
-  try {
-    const parsed = JSON.parse(value);
-    return isRecord(parsed) ? parsed : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
 function stringPath(value) {
   return typeof value === 'string' && value.length > 0 ? [value] : [];
-}
-
-function isRecord(value) {
-  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }

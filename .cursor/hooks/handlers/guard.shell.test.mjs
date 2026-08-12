@@ -1,5 +1,5 @@
 import { mkdtemp } from 'node:fs/promises';
-import { tmpdir } from 'node:os';
+import { homedir, tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { extractShellPaths } from '../lib/shell-paths.mjs';
@@ -17,6 +17,38 @@ describe('extractShellPaths', () => {
 
     expect(extractShellPaths('cat ../README.md', projectRoot, projectRoot)).toContain(
       join(dirname(projectRoot), 'README.md'),
+    );
+  });
+
+  it('ignores heredoc contents', async () => {
+    const projectRoot = await mkdtemp(join(tmpdir(), 'cursor-guard-project-'));
+
+    expect(
+      extractShellPaths(`cat <<'EOF'\n/etc/passwd\nEOF\n`, projectRoot, projectRoot),
+    ).not.toContain('/etc/passwd');
+  });
+
+  it('ignores paths inside quoted strings', async () => {
+    const projectRoot = await mkdtemp(join(tmpdir(), 'cursor-guard-project-'));
+
+    expect(
+      extractShellPaths('git commit -m "read /tmp/secret"', projectRoot, projectRoot),
+    ).not.toContain('/tmp/secret');
+  });
+
+  it('expands ~ to the home directory', async () => {
+    const projectRoot = await mkdtemp(join(tmpdir(), 'cursor-guard-project-'));
+
+    expect(extractShellPaths('cat ~/notes.md', projectRoot, projectRoot)).toContain(
+      join(homedir(), 'notes.md'),
+    );
+  });
+
+  it('ignores /dev/null', async () => {
+    const projectRoot = await mkdtemp(join(tmpdir(), 'cursor-guard-project-'));
+
+    expect(extractShellPaths('cat data > /dev/null', projectRoot, projectRoot)).not.toContain(
+      '/dev/null',
     );
   });
 });

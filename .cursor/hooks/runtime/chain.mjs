@@ -1,5 +1,11 @@
+/*
+ * FEATURES: H-chain
+ * PURPOSE: フックごとのハンドラチェーンを定義する (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
 import * as format from '../handlers/format.mjs';
 import * as guard from '../handlers/guard.mjs';
+import * as guardCommand from '../handlers/guard-command.mjs';
 import * as verify from '../handlers/verify.mjs';
 
 /**
@@ -7,14 +13,14 @@ import * as verify from '../handlers/verify.mjs';
  */
 export const HOOK_CHAIN = {
   beforeReadFile: [guard],
-  preToolUse: [guard],
-  beforeShellExecution: [guard],
+  preToolUse: [guard, guardCommand],
+  beforeShellExecution: [guard, guardCommand],
   afterFileEdit: [format],
   postToolUse: [format],
   stop: [verify],
 };
 
-const ALL_HANDLERS = [guard, format, verify];
+const ALL_HANDLERS = [guard, guardCommand, format, verify];
 
 const DEFAULT_PERMISSION_HOOKS = new Set([
   'beforeReadFile',

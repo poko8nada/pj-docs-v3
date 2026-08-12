@@ -14,6 +14,12 @@ describe('file-extensions', () => {
     expect(hasExtension('README.md', FORMAT_EXTENSIONS)).toBe(true);
   });
 
+  it('includes data families in format targets', () => {
+    expect(hasExtension('config.yaml', FORMAT_EXTENSIONS)).toBe(true);
+    expect(hasExtension('schema.graphql', FORMAT_EXTENSIONS)).toBe(true);
+    expect(hasExtension('pyproject.toml', FORMAT_EXTENSIONS)).toBe(true);
+  });
+
   it('uses oxlint only for js/ts families', () => {
     expect(hasExtension('src/App.tsx', OXLINT_EXTENSIONS)).toBe(true);
     expect(hasExtension('index.html', OXLINT_EXTENSIONS)).toBe(false);

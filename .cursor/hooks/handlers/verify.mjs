@@ -1,5 +1,11 @@
+/*
+ * FEATURES: H-verifier
+ * PURPOSE: ターン末に lint/format/typecheck を実行し残った問題を報告する (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
 import {
   FORMAT_CHECK_EXTENSIONS,
+  FORMAT_EXTENSIONS,
   hasExtension,
   OXLINT_EXTENSIONS,
   TYPECHECK_EXTENSIONS,
@@ -9,11 +15,14 @@ import { getMissingVerifyTooling } from '../lib/tooling.mjs';
 
 export const name = 'verify';
 
+// stop フックの自動ループ上限 (hooks.json の loop_limit と一致させる)
 const DEFAULT_LOOP_LIMIT = 3;
+// 自動メッセージをユーザー発言と誤認させないための接頭辞
 const MACHINE_PREFIX = '[Automated hook message — not from the user]\n\n';
 
 /**
- * ターン末に lint / format-check / typecheck を走らせ、問題があれば followup を返す。
+ * ターン末に lint --fix / format で自動修正してから lint / format-check / typecheck を走らせ、
+ * 残った問題があれば followup を返す。
  */
 export async function run(context) {
   const payload = isRecord(context.input) ? context.input : {};
@@ -40,54 +49,21 @@ export async function run(context) {
   }
 
   const touchedPaths = context.snapshot?.touchedPaths ?? [];
-
-  const lintTargets = touchedPaths.filter((filePath) => hasExtension(filePath, OXLINT_EXTENSIONS));
-  const formatCheckTargets = touchedPaths.filter((filePath) =>
-    hasExtension(filePath, FORMAT_CHECK_EXTENSIONS),
-  );
-  const typecheckTargets = touchedPaths.filter((filePath) =>
-    hasExtension(filePath, TYPECHECK_EXTENSIONS),
-  );
+  const targets = partitionTargets(touchedPaths);
 
   if (
-    lintTargets.length === 0 &&
-    formatCheckTargets.length === 0 &&
-    typecheckTargets.length === 0
+    targets.lint.length === 0 &&
+    targets.formatCheck.length === 0 &&
+    targets.typecheck.length === 0
   ) {
     return { response: {} };
   }
 
-  const failures = [];
+  // 自動修正を適用してからチェックする (opencode quality-gate のフロー)
+  // lint --fix が整形を崩すため fix → format の順で実行する
+  await autoFix(context.projectRoot, targets);
 
-  if (lintTargets.length > 0) {
-    const lint = await runCommand('pnpm', ['lint', ...lintTargets], context.projectRoot);
-    if (!lint.ok) {
-      failures.push(formatFailure('lint', lint));
-    }
-  }
-
-  if (formatCheckTargets.length > 0) {
-    const formatCheck = await runCommand(
-      'pnpm',
-      ['format:check', ...formatCheckTargets],
-      context.projectRoot,
-    );
-    if (!formatCheck.ok) {
-      failures.push(formatFailure('format:check', formatCheck));
-    }
-  }
-
-  if (typecheckTargets.length > 0) {
-    const typecheck = await runCommand(
-      'pnpm',
-      ['typecheck:staged', ...typecheckTargets],
-      context.projectRoot,
-    );
-    if (!typecheck.ok) {
-      failures.push(formatFailure('typecheck', typecheck));
-    }
-  }
-
+  const failures = await runChecks(context.projectRoot, targets);
   if (failures.length === 0) {
     return { response: {} };
   }
@@ -102,6 +78,62 @@ export async function run(context) {
       ].join('\n'),
     },
   };
+}
+
+// touchedPaths をチェック種別ごとに振り分ける
+function partitionTargets(touchedPaths) {
+  return {
+    lint: touchedPaths.filter((filePath) => hasExtension(filePath, OXLINT_EXTENSIONS)),
+    formatCheck: touchedPaths.filter((filePath) => hasExtension(filePath, FORMAT_CHECK_EXTENSIONS)),
+    typecheck: touchedPaths.filter((filePath) => hasExtension(filePath, TYPECHECK_EXTENSIONS)),
+    format: touchedPaths.filter((filePath) => hasExtension(filePath, FORMAT_EXTENSIONS)),
+  };
+}
+
+// lint --fix と format を実行して自動修正する
+async function autoFix(projectRoot, targets) {
+  if (targets.lint.length > 0) {
+    await runCommand('pnpm', ['lint', '--fix', ...targets.lint], projectRoot);
+  }
+  if (targets.format.length > 0) {
+    await runCommand('pnpm', ['format', ...targets.format], projectRoot);
+  }
+}
+
+// 修正後の状態で lint / format-check / typecheck を実行し、失敗一覧を返す
+async function runChecks(projectRoot, targets) {
+  const failures = [];
+
+  if (targets.lint.length > 0) {
+    const lint = await runCommand('pnpm', ['lint', ...targets.lint], projectRoot);
+    if (!lint.ok) {
+      failures.push(formatFailure('lint', lint));
+    }
+  }
+
+  if (targets.formatCheck.length > 0) {
+    const formatCheck = await runCommand(
+      'pnpm',
+      ['format:check', ...targets.formatCheck],
+      projectRoot,
+    );
+    if (!formatCheck.ok) {
+      failures.push(formatFailure('format:check', formatCheck));
+    }
+  }
+
+  if (targets.typecheck.length > 0) {
+    const typecheck = await runCommand(
+      'pnpm',
+      ['typecheck:staged', ...targets.typecheck],
+      projectRoot,
+    );
+    if (!typecheck.ok) {
+      failures.push(formatFailure('typecheck', typecheck));
+    }
+  }
+
+  return failures;
 }
 
 function formatFailure(label, result) {

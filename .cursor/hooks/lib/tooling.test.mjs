@@ -9,12 +9,7 @@ describe('tooling', () => {
     const projectRoot = await mkdtemp(join(tmpdir(), 'cursor-tooling-empty-'));
 
     expect(await hasFormatTooling(projectRoot)).toBe(false);
-    expect(await getMissingVerifyTooling(projectRoot)).toEqual([
-      'oxfmt',
-      'oxlint',
-      'typescript',
-      'tsc-files',
-    ]);
+    expect(await getMissingVerifyTooling(projectRoot)).toEqual(['oxfmt', 'oxlint', 'typescript']);
   });
 
   it('detects installed packages in this project', async () => {

@@ -1,8 +1,14 @@
+/*
+ * FEATURES: H-transformer
+ * PURPOSE: フォーマット / 検証ツールのインストール有無を判定する (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
 import { access } from 'node:fs/promises';
 import { join } from 'node:path';
 
 const FORMAT_PACKAGES = ['oxfmt'];
-const VERIFY_PACKAGES = ['oxfmt', 'oxlint', 'typescript', 'tsc-files'];
+// typecheck は scripts/typecheck-staged.mjs が tsc を直接実行するため tsc-files は不要
+const VERIFY_PACKAGES = ['oxfmt', 'oxlint', 'typescript'];
 
 export async function hasFormatTooling(projectRoot) {
   return hasPackages(projectRoot, FORMAT_PACKAGES);

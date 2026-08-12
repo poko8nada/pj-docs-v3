@@ -1,5 +1,11 @@
+/*
+ * FEATURES: H-gate
+ * PURPOSE: ルート外パスへのアクセスを拒否する (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
 import { isAllowedPath } from '../lib/allowed-paths.mjs';
 import { extractShellPaths } from '../lib/shell-paths.mjs';
+import { isRecord, normalizeToolInput } from '../lib/tool-input.mjs';
 
 export const name = 'guard';
 
@@ -98,26 +104,6 @@ function extractPaths(hookName, input, projectRoot) {
   return [];
 }
 
-function normalizeToolInput(value) {
-  if (isRecord(value)) {
-    return value;
-  }
-  if (typeof value !== 'string') {
-    return undefined;
-  }
-
-  try {
-    const parsed = JSON.parse(value);
-    return isRecord(parsed) ? parsed : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
 function stringPath(value) {
   return typeof value === 'string' && value.length > 0 ? [value] : [];
-}
-
-function isRecord(value) {
-  return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
