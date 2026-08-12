@@ -1,4 +1,8 @@
-#!/usr/bin/env node
+/*
+ * FEATURES: M-validate
+ * PURPOSE: products/ スナップショットの形式と整合性を検証する (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
 /**
  * products/ のスナップショットを検証する（lefthook pre-commit が実行）。
  * - 命名: YYYY-MM-DD-<seq>.md、seq は欠番なく増える
@@ -6,21 +10,25 @@
  * - 本文: ## <ID>: <名前> 見出し + バレットのみ
  * - 整合: changed に無いセクションは前スナップショットと同一、changed にあるセクションは変化している
  */
+
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const PRODUCTS_DIR = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../products');
+const DEFAULT_PRODUCTS_DIR = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '../products',
+);
 const SECTION_ID = /^(G|D|B|F)-[A-Za-z0-9.]+$/;
 const FILE_NAME = /^(\d{4}-\d{2}-\d{2})-(\d{3})\.md$/;
 
 /** @returns {string[]} ソート済みのスナップショットファイル名 */
-function listSnapshots() {
-  if (!fs.existsSync(PRODUCTS_DIR)) {
+export function listSnapshots(productsDir = DEFAULT_PRODUCTS_DIR) {
+  if (!fs.existsSync(productsDir)) {
     return [];
   }
   return fs
-    .readdirSync(PRODUCTS_DIR)
+    .readdirSync(productsDir)
     .filter((f) => FILE_NAME.test(f))
     .toSorted();
 }
@@ -29,7 +37,7 @@ function listSnapshots() {
  * @param {string} text ファイル全体
  * @returns {{ date?: string, context?: string, changed?: string[] } | null}
  */
-function parseFrontmatter(text) {
+export function parseFrontmatter(text) {
   const m = text.match(/^---\n([\s\S]*?)\n---\n/);
   if (!m) {
     return null;
@@ -58,7 +66,7 @@ function parseFrontmatter(text) {
  * @param {string} body frontmatter を除いた本文
  * @returns {Record<string, string[]>} セクションID → 行の配列
  */
-function parseSections(body) {
+export function parseSections(body) {
   /** @type {Record<string, string[]>} */
   const sections = {};
   let id = null;
@@ -83,11 +91,12 @@ function parseSections(body) {
 
 /**
  * @param {string} file ファイル名
+ * @param {string} productsDir スナップショットのディレクトリ
  * @returns {{ file: string, seq: number, fm: Record<string, string | string[]>, sections: Record<string, string[]>, errors: string[] }}
  */
-function validate(file) {
+export function validate(file, productsDir = DEFAULT_PRODUCTS_DIR) {
   const errors = [];
-  const text = fs.readFileSync(path.join(PRODUCTS_DIR, file), 'utf8');
+  const text = fs.readFileSync(path.join(productsDir, file), 'utf8');
   const fm = parseFrontmatter(text);
   if (!fm) {
     errors.push(`${file}: frontmatter is missing or malformed`);
@@ -129,14 +138,15 @@ function validate(file) {
 }
 
 /** 2つの行配列が同一か */
-function sameLines(a, b) {
+export function sameLines(a, b) {
   return JSON.stringify(a) === JSON.stringify(b);
 }
 
-function main() {
-  const files = listSnapshots();
+/** @returns {string[]} 全スナップショットの検証エラー一覧 */
+export function collectErrors(productsDir = DEFAULT_PRODUCTS_DIR) {
+  const files = listSnapshots(productsDir);
   const errors = [];
-  const parsed = files.map((f) => validate(f));
+  const parsed = files.map((f) => validate(f, productsDir));
   for (const p of parsed) {
     errors.push(...p.errors);
   }
@@ -168,13 +178,18 @@ function main() {
       }
     }
   }
+  return errors;
+}
 
+function main() {
+  const errors = collectErrors();
   if (errors.length > 0) {
     for (const e of errors) {
       console.error(`× ${e}`);
     }
     process.exit(1);
   }
+  const files = listSnapshots();
   console.log(`products/: ${files.length} snapshot(s) OK`);
 }
 

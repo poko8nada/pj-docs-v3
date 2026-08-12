@@ -1,4 +1,8 @@
-#!/usr/bin/env node
+/*
+ * FEATURES: M-validate
+ * PURPOSE: 変更対象ファイルのみを一時 tsconfig で型チェックする (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
 // 触ったファイルのみを型チェックするスクリプト（tsc-files の pnpm 非互換を解消する代替）
 // 使い方: node scripts/typecheck-staged.mjs <file1> <file2> ...
 // 仕組み: extends を使う一時 tsconfig を生成し、対象ファイルだけを tsc -p で検査する

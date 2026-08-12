@@ -48,8 +48,8 @@ pnpm test:run
 
 ## Contributing
 
-- コミット前に Lefthook が staged ファイルへ format / lint を実行する（対象: `*.{js,jsx,ts,tsx,mjs,cjs}`）。typecheck は `*.{ts,tsx}` のみ。
-- プッシュ前に `pnpm typecheck`（全量）と、未解決の `NOTE:` コメントがないことのチェックが走る。
+- コミット前に Lefthook が staged ファイルへ format / lint を実行する（対象: `*.{js,jsx,ts,tsx,mjs,cjs}`）。typecheck は `*.{ts,tsx}` のみ。実コードファイルには FEATURES / PURPOSE / STATUS の冒頭ヘッダーが必須（header-gate）。
+- プッシュ前に `pnpm typecheck`（全量）が走る。
 - 方針の大きな変更は Issue か PR 説明で共有するとよい。
 
 ## License
