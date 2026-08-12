@@ -14,6 +14,7 @@ permission:
     'git diff *': allow
     'git diff --cached *': allow
     'git status *': allow
+    'echo *': allow
   task: deny
   edit:
     '*': deny
@@ -56,6 +57,7 @@ Create the file given in the mission's `Output` field (`findings/review/YYYY-MM-
 
 - Create the directory if it does not exist.
 - Use the assigned file path as-is; the main agent has already allocated a unique `seq` per sub-agent.
+- The seq resets daily (the first file of a day is `YYYY-MM-DD-001.md`); never infer the seq from yesterday's files.
 - Never overwrite an existing file.
 
 ## Frontmatter
@@ -63,12 +65,11 @@ Create the file given in the mission's `Output` field (`findings/review/YYYY-MM-
 ```yaml
 ---
 date: YYYY-MM-DD
-context:
 ---
 ```
 
 - `date`: today's date.
-- `context`: leave blank. The main agent fills it after discussing with the user.
+- Do not write `outcomes` or any other field. The main agent fills `outcomes` after discussing with the user.
 
 ## Body
 
@@ -87,15 +88,21 @@ context:
 ## Check (ALL three viewpoints, in order)
 
 - Correctness
-  - <no findings> or one or more findings (repeat the 4 fields below):
+  - <no findings> or one or more findings (repeat the 5 fields below):
+    - ID: <C1, C2, ...>
     - Severity: <high / medium / low>
     - Finding: <finding>
     - Recommendation: <recommendation>
     - Source: <file:line>
 - Security
-  - <same as above>
+  - <same as above, IDs: S1, S2, ...>
 - Maintainability
-  - <same as above>
+  - <same as above, IDs: M1, M2, ...>
+
+ID rules:
+
+- Assign IDs per viewpoint, numbered sequentially (C1, C2, ... / S1, S2, ... / M1, M2, ...).
+- The main agent references these IDs when recording outcomes, so keep them stable.
 
 Severity definitions:
 

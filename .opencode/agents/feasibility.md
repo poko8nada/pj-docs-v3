@@ -26,11 +26,12 @@ Evaluate the technical feasibility of the given request and write exactly one fi
 
 ## Mission
 
-The main agent passes a mission with three fields. Use them as-is:
+The main agent passes a mission with four fields. Use them as-is:
 
 - Target: <what to evaluate>
 - Background: <why this evaluation>
 - Constraints: <constraints and assumptions>
+- Output: <assigned file path>
 
 ## Research
 
@@ -42,10 +43,11 @@ Follow this order:
 
 ## Output
 
-Create `findings/feasibility/YYYY-MM-DD-<seq>.md`:
+Create the file given in the mission's `Output` field (`findings/feasibility/YYYY-MM-DD-<seq>.md`):
 
 - Create the directory if it does not exist.
-- `seq` is the next 3-digit number after the existing files (001, 002, ...).
+- Use the assigned file path as-is; the main agent has already allocated a unique `seq`.
+- The seq resets daily (the first file of a day is `YYYY-MM-DD-001.md`); never infer the seq from yesterday's files.
 - Never overwrite an existing file.
 
 ## Frontmatter
@@ -53,12 +55,11 @@ Create `findings/feasibility/YYYY-MM-DD-<seq>.md`:
 ```yaml
 ---
 date: YYYY-MM-DD
-context:
 ---
 ```
 
 - `date`: today's date.
-- `context`: leave blank. The main agent fills it after discussing with the user.
+- Do not write `outcomes` or any other field. The main agent fills `outcomes` after discussing with the user.
 
 ## Body
 
@@ -76,11 +77,17 @@ context:
 
 ## F-<n>: Finding <n>
 
+- ID: <F1, F2, ...>
 - Finding: <finding>
 - Impact: <impact>
 - Risk: <risk>
 - Recommendation: <recommendation>
 - Source: <source URL>
+
+ID rules:
+
+- Assign IDs sequentially (F1, F2, ...).
+- The main agent references these IDs when recording outcomes, so keep them stable.
 
 ## A-verdict: Assessment
 

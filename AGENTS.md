@@ -14,6 +14,7 @@ Repeat this loop.
 - Never propose a strategy until the context is fully understood.
 - Explain the strategy by covering the "what," "why," and "how," **focusing only on the essentials.**
 - Do **NOT** use default `plan` mode. That is too noisy.
+- Do **NOT** use `ask question tool.` Only standard chat is permitted.
 - Base the strategy on universal and general approaches.
 
 ## Implementation

@@ -15,20 +15,34 @@ Reviews code, design, or documents and records the result as an append-only find
    - `<concern or rationale>`
    - Split any area with `diff > 500 lines` into sub-areas, and list the diff lines for each sub-area as well.
 3. For each finalized area or sub-area, launch **one or more** review sub-agents **in the background.**
-   - Before launching, assign each sub-agent a unique output file: list `findings/review/` and allocate `YYYY-MM-DD-<seq>.md` in order (001, 002, ...).
+   - Before launching, assign each sub-agent a unique output file: list `findings/review/` and allocate `YYYY-MM-DD-<seq>.md` in order (001, 002, ...). The seq resets daily: the first finding of today is `YYYY-MM-DD-001.md` regardless of yesterday's numbers.
    - When doing so, provide a mission prompt containing only the following four fields (do not pass the diff itself, as the sub-agent will retrieve the changes using `git diff`):
      - Target: <what to review>
      - Background: <why this review>
      - Constraints: <review scope and assumptions>
      - Output: <assigned file path>
-4. When the sub-agent finishes, it has created the assigned `findings/review/YYYY-MM-DD-<seq>.md` with `context` blank.
-5. Read the created file and present the findings to the user.
-6. Discuss with the user and obtain the outcome (adopt / reject / pending).
-7. Fill the `context` field in the frontmatter with the outcome and reasoning.
-8. Report the file path and the outcome.
+4. When the sub-agent finishes, it has created the assigned `findings/review/YYYY-MM-DD-<seq>.md` with `date` only (no `outcomes`).
+5. Read the created file and present the findings to the user with this format:
+   - `<ID> (<severity>): <finding summary>`
+   - `  - 推奨: <recommendation>`
+   - `  - 決定: 採用 / 不採用?`
+   - Present every finding; the user decides each one.
+6. Discuss with the user and obtain the decision for each finding (adopt / reject). There is no pending: every finding is decided.
+   - high findings are presented as "adopt (fix required)" by default; confirm with the user.
+7. Fill the `outcomes` field in the frontmatter with the decisions:
+   ```yaml
+   outcomes:
+     - id: C1
+       adopted: true
+       note: <reason or fix summary>
+   ```
+   - `adopted: true` means the finding is adopted (fix applied or planned); `false` means rejected.
+   - `note`: one line explaining the decision or the applied fix.
+   - List only decided findings; every finding in the body must appear in `outcomes`.
+8. Report the file path and the outcome summary.
 
 ## Rules
 
-- Do not modify the findings content; only fill `context`.
+- Do not modify the findings content; only fill `outcomes`.
 - The document format is owned by the sub-agent. Do not get involved in it.
-- If the finding is adopted, propose next steps (e.g., product update, charter the change).
+- If a finding is adopted, propose next steps (e.g., product update, charter the change).
