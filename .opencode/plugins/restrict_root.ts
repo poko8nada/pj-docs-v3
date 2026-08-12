@@ -1,3 +1,8 @@
+/*
+ * FEATURES: H-gate
+ * PURPOSE: プロジェクトルート外のファイルアクセスを制限し、read ツールのみ追加の外部パスを許可する (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
 import type { Plugin } from '@opencode-ai/plugin';
 import * as os from 'node:os';
 import * as path from 'node:path';
@@ -35,6 +40,11 @@ export const RestrictRootPlugin: Plugin = async ({ worktree, directory }) => {
     path.join(os.homedir(), '.cursor'),
   ];
 
+  // read ツールのみ許可する外部パス（例: opencode のセッションログでサブエージェントの実行内容を確認する用途）
+  // bash や write では引き続き制限されるため、制限が緩くならない
+  const xdgDataHome = process.env.XDG_DATA_HOME ?? path.join(os.homedir(), '.local', 'share');
+  const allowedReadPaths = [path.join(xdgDataHome, 'opencode')];
+
   // ~ をホームディレクトリへ展開し、絶対パスに正規化する
   // path.resolve を使うため、root が "/" の場合も正しく判定できる
   const normalize = (filePath: string) => {
@@ -57,12 +67,19 @@ export const RestrictRootPlugin: Plugin = async ({ worktree, directory }) => {
   const isInsideAllowedExternal = (normalized: string) =>
     allowedExternalPaths.some((p) => normalized === p || normalized.startsWith(p + '/'));
 
-  const checkPath = (filePath: string) => {
+  // read ツール専用の例外判定（allowedReadPaths 配下）
+  const isInsideAllowedRead = (normalized: string) =>
+    allowedReadPaths.some((p) => normalized === p || normalized.startsWith(p + '/'));
+
+  const checkPath = (filePath: string, isRead: boolean) => {
     const normalized = normalize(filePath);
     if (!isInsideProject(normalized) && !isInsideAllowedExternal(normalized)) {
-      throw new Error(
-        '[restrict-root] Access outside the project root directory is prohibited: ' + filePath,
-      );
+      // read ツールのみ allowedReadPaths 配下を許可する
+      if (!(isRead && isInsideAllowedRead(normalized))) {
+        throw new Error(
+          '[restrict-root] Access outside the project root directory is prohibited: ' + filePath,
+        );
+      }
     }
   };
 
@@ -78,7 +95,7 @@ export const RestrictRootPlugin: Plugin = async ({ worktree, directory }) => {
           if (p === '/dev/null') {
             continue;
           }
-          checkPath(p);
+          checkPath(p, false);
         }
         return;
       }
@@ -90,7 +107,8 @@ export const RestrictRootPlugin: Plugin = async ({ worktree, directory }) => {
       if (!fileArg) {
         return;
       }
-      checkPath(fileArg);
+      // read ツールのみ allowedReadPaths 配下を許可する（その他のツールは一律制限）
+      checkPath(fileArg, input.tool === 'read');
     },
   };
 };
