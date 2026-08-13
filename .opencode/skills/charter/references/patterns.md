@@ -37,3 +37,4 @@ Skill scripts are tools a skill runs against its own workspace (`<skill>/scripts
 - **S-report — metric reporter**: Tallies a defined metric (e.g. diff line counts) for given inputs and reports it for humans. Read-only; no side effects.
 - **S-verify — compliance verifier**: Checks whether a target satisfies defined criteria and reports the result. Read-only.
 - **S-sync — target synchronizer**: Aligns state between two targets. Exactly one target is the source of truth.
+- **S-source — skill source module**: Skill-owned source that S-\* scripts execute but which is not itself an operation: workspace runtime (Vite entry, client-side chrome, build config) and shared script modules (e.g. `_paths.mjs`).

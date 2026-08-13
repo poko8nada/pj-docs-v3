@@ -4,6 +4,8 @@ A feature is a capability unit that can be implemented and verified independentl
 
 - Feature names use the `F-<domain>.<sub>` form (e.g., `F-auth.login`).
 - Do not use sequential numbers (F-01): functional names keep existing IDs stable across additions, reordering, and splits.
+- Feature IDs referenced from code headers are leaf features and always carry the dotted form. Non-dotted names may appear only as grouping domains in the tree (e.g. `F-note` below); they are never referenced from headers.
+- Renames and removals are recorded in a snapshot via `removed` plus `changed` (see products/README.md).
 
 ## Granularity judgment (three questions)
 

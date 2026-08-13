@@ -1,9 +1,10 @@
 ---
-description: Evaluates a single stack candidate and writes its comparison finding to findings/stack-eval/. One instance per candidate, launched in parallel.
+description: Use when comparing stack candidates. Scaffolds one candidate into .stack-eval/<slug>/, researches it, and writes its comparison finding to findings/stack-eval/. One instance per candidate, launched in parallel.
 mode: subagent
+model: opencode-go/deepseek-v4-flash
 temperature: 0.1
-reasoningEffort: low
-steps: 24
+reasoningEffort: high
+steps: 36
 permission:
   read: allow
   glob: allow
@@ -20,9 +21,9 @@ permission:
   context7_query_docs: allow
 ---
 
-# stack-eval sub-agent
+# stack-eval-research sub-agent
 
-Evaluate exactly one stack candidate and write its comparison finding file. The main agent launches one instance per candidate in parallel.
+Phase 1 of the stack-eval flow: scaffold exactly one candidate, research it, and write its complete comparison finding file. The main agent launches one instance per candidate in parallel.
 
 ## Mission
 
@@ -34,6 +35,10 @@ The main agent passes a mission with four fields. Use them as-is:
 - Output: <assigned file path: findings/stack-eval/YYYY-MM-DD-<seq>-<slug>.md>
 
 The mission never includes product definition content. Evaluate purely from the four fields.
+
+- The adoption premise is integration at the project root: the candidate is integrated into the existing project root, not nested as a sub-project.
+- Evaluate footprint and config surface against that premise.
+- Note in the finding when a candidate layout would imply a monorepo and what the folder-level alternative would be.
 
 ## Scaffold
 
@@ -59,7 +64,8 @@ Create the file given in the mission's `Output` field:
 
 - Create the directory if it does not exist.
 - Use the assigned file path as-is; the main agent has already allocated a unique `seq` and slug.
-- Never overwrite an existing file.
+- Never overwrite an existing file. The assigned file is yours to create; never touch files of other candidates.
+- The file must be **complete** when you finish: every field of the candidate section filled with researched facts. Do not leave gaps for a later phase.
 
 ## Frontmatter
 
@@ -94,26 +100,6 @@ date: YYYY-MM-DD
 - Init story: <official additive CLI availability for existing projects>
 - Maintenance: <release cadence, ecosystem health, known issues>
 - Recommendation: <recommendation>
-
-## R-runbook: Adoption runbook
-
-Written only after the main agent resumes this session with the adoption decision. Do not add this section during the first pass.
-
-- Candidate: <adopted candidate name>
-- Method: <official additive CLI / temp scaffold + diff>
-- Steps: <one bullet per operation, file-level, self-contained; the first step is the re-scaffold command>
-- Ownership decisions: <one bullet per file or config that was kept, skipped, or overridden, with the reason>
-- Verification: <commands to run, e.g. pnpm install, pnpm typecheck, pnpm lint, pnpm format:check, pnpm test:run, pnpm build>
-
-## Adoption conventions (apply when writing the runbook)
-
-- Prefer the official additive CLI when one exists; it keeps the result identical to the vendor's intended setup.
-- Otherwise scaffold the official starter into `.stack-eval/<slug>/`, diff it against the existing project, and adopt only the framework-owned files.
-- The existing tooling layer (lint, format, hooks, test runner) stays; adopt the framework's files around it.
-- Merge dependencies into the existing package.json; never replace it.
-- Reconcile tsconfig by inheritance where the framework requires root tsconfig changes.
-- Every skipped or overridden framework file needs an Ownership decisions line with the reason.
-- Start the runbook with the re-scaffold command so it stays self-contained after `.stack-eval/` is removed.
 
 ## Return
 

@@ -3,14 +3,19 @@
     "target": "ESNext",
     "module": "ESNext",
     "moduleResolution": "Bundler",
-    "rootDir": ".",
-    "outDir": "dist",
+    "lib": ["ESNext"],
     "strict": true,
     "allowJs": true,
     "noEmit": true,
     "skipLibCheck": true,
-    "lib": ["ESNext", "DOM", "DOM.Iterable"]
+    "verbatimModuleSyntax": true,
+    "moduleDetection": "force",
+    "erasableSyntaxOnly": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "allowImportingTsExtensions": true
   },
-  "include": ["**/*.ts"],
+  "include": ["**/*.ts", "**/*.mts", "**/*.cts"],
   "exclude": ["node_modules", "dist"]
 }

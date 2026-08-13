@@ -1,9 +1,10 @@
 ---
-description: Evaluates the technical feasibility of a proposed approach and writes a structured finding to findings/feasibility/.
+description: Use when the technical feasibility of a proposed approach needs evaluation and the result should be recorded in findings/feasibility/.
 mode: subagent
+model: opencode-go/deepseek-v4-flash
 temperature: 0.1
-reasoningEffort: low
-steps: 8
+reasoningEffort: high
+steps: 20
 permission:
   read: allow
   glob: allow
@@ -78,6 +79,7 @@ date: YYYY-MM-DD
 ## F-<n>: Finding <n>
 
 - ID: <F1, F2, ...>
+- Severity: <high / medium / low>
 - Finding: <finding>
 - Impact: <impact>
 - Risk: <risk>

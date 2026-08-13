@@ -2,7 +2,7 @@
   "name": "opencode-plugins",
   "private": true,
   "dependencies": {
-    "@opencode-ai/plugin": "1.18.15"
+    "@opencode-ai/plugin": "1.18.18"
   },
   "devDependencies": {
     "@types/bun": "latest",

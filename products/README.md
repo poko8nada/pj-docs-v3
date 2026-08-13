@@ -28,12 +28,19 @@ date: 2026-08-20
 context: <why this change was made, in prose>
 changed:
   - <section ID>
+removed:
+  - <section ID>
 ---
 ```
 
 - `date`: required, YYYY-MM-DD. Must match the filename date.
 - `context`: required. The situation and reasoning behind the change.
 - `changed`: required for snapshots #2+. Section IDs changed in this snapshot. Absent or empty for the working document.
+- `removed`: optional. Section IDs that existed in the previous snapshot and no longer exist in this one.
+  - A section listed in `removed` must exist in the previous snapshot and be absent in the current one.
+  - `removed` must not overlap `changed`.
+  - A rename is expressed as `removed: [<old ID>]` plus `changed: [<new ID>]` with the renamed section content.
+  - Sections that disappear without being listed in `removed` are validation errors (unintended deletion).
 
 ## Section IDs
 

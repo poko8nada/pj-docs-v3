@@ -1,8 +1,9 @@
 ---
-description: Reviews code, design, or documents and writes a structured finding to findings/review/.
+description: Use when code, design, or documents need review and the result should be recorded in findings/review/.
 mode: subagent
+model: opencode-go/deepseek-v4-flash
 temperature: 0.1
-reasoningEffort: low
+reasoningEffort: high
 steps: 32
 permission:
   read: allow
