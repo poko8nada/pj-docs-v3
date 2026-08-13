@@ -10,8 +10,8 @@ import { spawnSync } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 
-// 型チェックの対象拡張子
-const CHECKABLE_EXT = new Set(['.ts', '.tsx', '.mts', '.cts']);
+// 型チェックの対象拡張子（.js 系は allowJs で構文まで検査する）
+const CHECKABLE_EXT = new Set(['.ts', '.tsx', '.mts', '.cts', '.js', '.jsx', '.mjs', '.cjs']);
 // 専用 tsconfig を持つディレクトリ（.opencode 配下は別 tsconfig で型チェックする）
 const OPENCODE_DIR = '.opencode';
 
