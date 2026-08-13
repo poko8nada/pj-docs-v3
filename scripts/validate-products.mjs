@@ -6,9 +6,11 @@
 /**
  * products/ のスナップショットを検証する（lefthook pre-commit が実行）。
  * - 命名: YYYY-MM-DD-<seq>.md、seq は欠番なく増える
- * - frontmatter: date / context / changed の形式
+ * - frontmatter: date / context / changed / removed の形式
  * - 本文: ## <ID>: <名前> 見出し + バレットのみ
  * - 整合: changed に無いセクションは前スナップショットと同一、changed にあるセクションは変化している
+ * - 削除: removed にあるセクションは前スナップショットに存在し、今回存在しない。改名は removed + changed の組み合わせ
+ * - 先頭: 前スナップショットが無いため removed は宣言できない
  */
 
 import fs from 'node:fs';
@@ -35,7 +37,7 @@ export function listSnapshots(productsDir = DEFAULT_PRODUCTS_DIR) {
 
 /**
  * @param {string} text ファイル全体
- * @returns {{ date?: string, context?: string, changed?: string[] } | null}
+ * @returns {{ date?: string, context?: string, changed?: string[], removed?: string[] } | null}
  */
 export function parseFrontmatter(text) {
   const m = text.match(/^---\n([\s\S]*?)\n---\n/);
@@ -121,6 +123,13 @@ export function validate(file, productsDir = DEFAULT_PRODUCTS_DIR) {
     }
   }
 
+  const removed = Array.isArray(fm.removed) ? fm.removed : [];
+  for (const id of removed) {
+    if (!SECTION_ID.test(id)) {
+      errors.push(`${file}: invalid removed ID "${id}"`);
+    }
+  }
+
   const body = text.replace(/^---\n[\s\S]*?\n---\n/, '');
   const sections = parseSections(body);
   for (const [id, lines] of Object.entries(sections)) {
@@ -157,11 +166,37 @@ export function collectErrors(productsDir = DEFAULT_PRODUCTS_DIR) {
     }
   }
 
+  // 先頭スナップショットは前が無いため removed は意味を持たない
+  if (parsed.length > 0) {
+    const first = parsed[0];
+    const removed = Array.isArray(first.fm.removed) ? first.fm.removed : [];
+    if (removed.length > 0) {
+      errors.push(
+        `${first.file}: removed has no effect in the first snapshot (no previous snapshot)`,
+      );
+    }
+  }
+
   for (let i = 1; i < parsed.length; i++) {
     const prev = parsed[i - 1];
     const curr = parsed[i];
     const changed = Array.isArray(curr.fm.changed) ? curr.fm.changed : [];
+    const removed = Array.isArray(curr.fm.removed) ? curr.fm.removed : [];
+    for (const id of removed) {
+      if (changed.includes(id)) {
+        errors.push(`${curr.file}: removed ID "${id}" overlaps changed`);
+      }
+      if (!prev.sections[id]) {
+        errors.push(`${curr.file}: removed section ${id} does not exist in previous snapshot`);
+      }
+      if (curr.sections[id]) {
+        errors.push(`${curr.file}: removed section ${id} still exists`);
+      }
+    }
     for (const [id, lines] of Object.entries(prev.sections)) {
+      if (removed.includes(id)) {
+        continue;
+      }
       if (changed.includes(id)) {
         if (!curr.sections[id]) {
           errors.push(`${curr.file}: changed section ${id} is missing`);
