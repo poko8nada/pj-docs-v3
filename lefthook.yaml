@@ -17,6 +17,11 @@ pre-commit:
             glob: '*.{ts,tsx}'
             run: pnpm typecheck:staged {staged_files}
             fail_text: 'Type check failed. Run: pnpm typecheck:staged for details.'
+    - name: sync-config-snapshots
+      skip:
+        - run: test ! -f scripts/sync-config-snapshots.mjs || test ! -f _package.json || test ! -f _tsconfig.json
+      run: node scripts/sync-config-snapshots.mjs
+      fail_text: 'Config snapshot sync failed. _package.json / _tsconfig.json were not updated.'
     - name: validate-products
       run: node scripts/validate-products.mjs
       fail_text: 'products/ snapshots are invalid. Fix the format or consistency before committing.'
