@@ -11,6 +11,53 @@ import { qualityCheck } from './lib/checks/quality';
 import { runIdleChain, type CheckContext } from './lib/idle-chain';
 import { createFileTracker, isInsideRoot } from './lib/track-files';
 
+// 連続「問題ありサイクル」数の上限（ループガード）。
+// チェックは常に実行し、止めるのはプロンプト送信のみ。
+// クリーンサイクル（フォローアップ 0 件）で 0 にリセットされるため、
+// 異なる問題を順に解決する健全なセッションは制限に達しない。
+const MAX_CONSECUTIVE_ISSUE_CYCLES = 3;
+
+// チェーンを実行し、フォローアップを集約してから送信可否を判断する
+async function runIdleChainGated(
+  ctx: CheckContext,
+  prompt: (sessionID: string, text: string) => Promise<void>,
+  log: CheckContext['log'],
+  issueCycleCounts: Map<string, number>,
+) {
+  // 編集なしのアイドルはクリーンサイクルとしてカウンタをリセットする
+  if (ctx.files.length === 0) {
+    issueCycleCounts.set(ctx.sessionID, 0);
+    return;
+  }
+
+  const collected: string[] = [];
+  await runIdleChain(ctx, [qualityCheck, driftCheck], async (text) => {
+    collected.push(text);
+  });
+
+  // フォローアップなしのクリーンサイクルも同様にリセットする
+  if (collected.length === 0) {
+    issueCycleCounts.set(ctx.sessionID, 0);
+    return;
+  }
+
+  const count = issueCycleCounts.get(ctx.sessionID) ?? 0;
+  if (count >= MAX_CONSECUTIVE_ISSUE_CYCLES) {
+    // 連続で問題が解消しないループを止める。チェック自体は実行され続ける
+    await log('idle-runtime', 'warn', 'consecutive issue cycles exceeded, prompting stopped', {
+      sessionID: ctx.sessionID,
+      count,
+    });
+    return;
+  }
+  for (const text of collected) {
+    // oxlint-disable-next-line no-await-in-loop -- ストリーム混線を防ぐため直列送信
+    await prompt(ctx.sessionID, text);
+  }
+  // 送信が完了して初めてサイクルを消費する（送信失敗時はカウントしない）
+  issueCycleCounts.set(ctx.sessionID, count + 1);
+}
+
 export const IdleRuntimePlugin: Plugin = async ({ client, directory, worktree, $ }) => {
   // directory（プロジェクトディレクトリ）を優先し、未設定なら worktree にフォールバック
   const root = path.resolve(directory || worktree);
@@ -43,19 +90,7 @@ export const IdleRuntimePlugin: Plugin = async ({ client, directory, worktree, $
     });
   };
 
-  // セッションごとのフォローアップ送信回数（連続ループの上限ガード）
-  // 問題が解消しない限り idle → prompt → idle が繰り返されるため、
-  // 上限到達後は送信を停止してログに記録する
-  const followUpCounts = new Map<string, number>();
-  const MAX_FOLLOW_UPS_PER_SESSION = 5;
-  const canFollowUp = (sessionID: string) => {
-    const count = followUpCounts.get(sessionID) ?? 0;
-    if (count >= MAX_FOLLOW_UPS_PER_SESSION) {
-      return false;
-    }
-    followUpCounts.set(sessionID, count + 1);
-    return true;
-  };
+  const issueCycleCounts = new Map<string, number>();
 
   return {
     // 編集ツールの実行後にファイルを記録する
@@ -86,21 +121,10 @@ export const IdleRuntimePlugin: Plugin = async ({ client, directory, worktree, $
       }
       const sessionID = event.properties.sessionID;
       const files = tracker.take(sessionID);
-      if (files.length === 0) {
-        return;
-      }
-
-      // フォローアップ送信回数の上限に達したセッションはチェーンを実行しない
-      if (!canFollowUp(sessionID)) {
-        await log('idle-runtime', 'warn', 'follow-up limit reached, skipping idle chain', {
-          sessionID,
-        });
-        return;
-      }
 
       const ctx: CheckContext = { root, sessionID, files, run, log };
       try {
-        await runIdleChain(ctx, [qualityCheck, driftCheck], (text) => prompt(sessionID, text));
+        await runIdleChainGated(ctx, prompt, log, issueCycleCounts);
       } catch (error) {
         await log('idle-runtime', 'error', 'idle chain failed', {
           sessionID,
