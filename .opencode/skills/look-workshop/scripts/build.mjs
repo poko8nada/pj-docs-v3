@@ -3,8 +3,8 @@
  * PURPOSE: look-workshop 作業場を singlefile HTML にビルドし、findings/ へ出力する (isDone: true)
  * STATUS: sizeDrift=false, driftSuspected=false
  */
-// foundation build — chrome 無し Vite build（singlefile）→ findings/foundation/<slug>.html
-// 画像など外出し資産は findings/foundation/assets/ へマージ（既存は残す・同名は上書き）。
+// look-workshop build — chrome 無し Vite build（singlefile）→ findings/look-workshop/<slug>.html
+// 画像など外出し資産は findings/look-workshop/assets/ へマージ（既存は残す・同名は上書き）。
 // 作業場（index.html / comments.json）は変更しない。
 import { spawnSync } from 'node:child_process';
 import { copyFileSync, existsSync, mkdirSync, readdirSync, statSync } from 'node:fs';
@@ -42,11 +42,9 @@ function isImage(name) {
 ensureDeps();
 ensureWorkspace();
 
-const build = spawnSync(
-  'pnpm',
-  ['--ignore-workspace', '--dir', workspaceDir, 'run', 'foundation:build'],
-  { stdio: 'inherit' },
-);
+const build = spawnSync('pnpm', ['--ignore-workspace', '--dir', workspaceDir, 'run', 'build'], {
+  stdio: 'inherit',
+});
 if (build.error || build.status !== 0) {
   process.stderr.write('[look-workshop] vite build に失敗しました\n');
   process.exit(build.status ?? 1);
@@ -59,11 +57,11 @@ if (!existsSync(htmlSrc)) {
 }
 
 const slug = makeSlug();
-const foundationDir = findingsLookWorkshopDir();
-const sharedAssets = join(foundationDir, 'assets');
-const htmlOut = join(foundationDir, `${slug}.html`);
+const outputDir = findingsLookWorkshopDir();
+const sharedAssets = join(outputDir, 'assets');
+const htmlOut = join(outputDir, `${slug}.html`);
 
-mkdirSync(foundationDir, { recursive: true });
+mkdirSync(outputDir, { recursive: true });
 mkdirSync(sharedAssets, { recursive: true });
 copyFileSync(htmlSrc, htmlOut);
 

@@ -1,4 +1,9 @@
-// foundation スクリプト共通パス。プロジェクトルートから実行想定。
+/*
+ * FEATURES: S-source
+ * PURPOSE: スキルスクリプト共通のパス定義と依存・作業場準備を提供する (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
+// look-workshop スクリプト共通パス。プロジェクトルートから実行想定。
 import { copyFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -67,10 +72,10 @@ function pad2(n) {
   return String(n).padStart(2, '0');
 }
 
-/** ローカル日時ベースの slug。FOUNDATION_SLUG があればそれを使う。 */
+/** ローカル日時ベースの slug。LOOK_WORKSHOP_SLUG があればそれを使う。 */
 export function makeSlug() {
-  if (process.env.FOUNDATION_SLUG) {
-    return process.env.FOUNDATION_SLUG;
+  if (process.env.LOOK_WORKSHOP_SLUG) {
+    return process.env.LOOK_WORKSHOP_SLUG;
   }
   const d = new Date();
   return (

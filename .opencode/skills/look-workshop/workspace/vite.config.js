@@ -1,4 +1,9 @@
-// foundation 作業場用 Vite 設定。
+/*
+ * FEATURES: S-source
+ * PURPOSE: ワークスペースの Vite 設定。dev の comments 永続化と singlefile ビルドを担う (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
+// look-workshop 作業場用 Vite 設定。
 // - Tailwind: @tailwindcss/vite
 // - comments: dev（configureServer）のみ。comments.json を fs で読み書きし、
 //   ブラウザの GET/POST /comments でユーザーの編集を永続化する。
@@ -16,7 +21,7 @@ const commentsFile = join(here, 'comments.json');
 
 function commentsPlugin() {
   return {
-    name: 'foundation-comments',
+    name: 'look-workshop-comments',
     configureServer(server) {
       server.middlewares.use((req, res, next) => {
         if (req.url !== '/comments') {
@@ -64,7 +69,7 @@ function readBody(req) {
   });
 }
 
-const port = Number(process.env.FOUNDATION_PORT) || 5173;
+const port = Number(process.env.LOOK_WORKSHOP_PORT) || 5173;
 
 export default defineConfig(({ command }) => ({
   plugins: [tailwindcss(), ...(command === 'serve' ? [commentsPlugin()] : [viteSingleFile()])],

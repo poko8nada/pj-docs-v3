@@ -1,4 +1,4 @@
-/* foundation — 見た目の正はここ。トークンは shadcn の変数命名に合わせる。
+/* look-workshop — 見た目の正はここ。トークンは shadcn の変数命名に合わせる。
    クロームは chrome.css（dev のみ）。HTML に生 hex を散らさない。 */
 @import 'tailwindcss';
 

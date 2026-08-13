@@ -3,7 +3,7 @@
  * PURPOSE: look-workshop 作業場の Vite 開発サーバーを起動し、cmux でブラウザを開く (isDone: true)
  * STATUS: sizeDrift=false, driftSuspected=false
  */
-// foundation dev — 作業場を Vite で起動し、準備できたら cmux で開く。
+// look-workshop dev — 作業場を Vite で起動し、準備できたら cmux で開く。
 // Ctrl-C で Vite ごと終了。ルートの package.json は触らない。
 import { spawn, spawnSync } from 'node:child_process';
 import { get } from 'node:http';
@@ -12,12 +12,12 @@ import { ensureDeps, ensureWorkspace, workspaceDir } from './_paths.mjs';
 ensureDeps();
 ensureWorkspace();
 
-const port = Number(process.env.FOUNDATION_PORT) || 5173;
+const port = Number(process.env.LOOK_WORKSHOP_PORT) || 5173;
 const url = 'http://127.0.0.1:' + port + '/';
 
-const vite = spawn('pnpm', ['--ignore-workspace', '--dir', workspaceDir, 'run', 'foundation:dev'], {
+const vite = spawn('pnpm', ['--ignore-workspace', '--dir', workspaceDir, 'run', 'dev'], {
   stdio: 'inherit',
-  env: { ...process.env, FOUNDATION_PORT: String(port) },
+  env: { ...process.env, LOOK_WORKSHOP_PORT: String(port) },
 });
 
 poll(url, 20000)

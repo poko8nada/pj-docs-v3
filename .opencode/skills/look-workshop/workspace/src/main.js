@@ -1,4 +1,9 @@
-// foundation — エントリ。
+/*
+ * FEATURES: S-source
+ * PURPOSE: ワークスペースのエントリ。見た目 CSS と dev 専用のコメントクロームを読み込む (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
+// look-workshop — エントリ。
 // 見た目は index.html（body 配下）。コメント用クロームは dev のみ。
 import './look.css';
 

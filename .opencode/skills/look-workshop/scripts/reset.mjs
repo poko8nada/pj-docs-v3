@@ -3,7 +3,7 @@
  * PURPOSE: look-workshop 作業場の生成物を削除し、デフォルト状態へ戻す (isDone: true)
  * STATUS: sizeDrift=false, driftSuspected=false
  */
-// foundation reset — 作業場をデフォルトに戻す。findings は消さない。
+// look-workshop reset — 作業場をデフォルトに戻す。findings は消さない。
 // workspace/index.html（生成物）と comments.json、dist を削除する。
 // index.html は次回 dev/build 時に defaults から復元される。
 import { existsSync, rmSync } from 'node:fs';

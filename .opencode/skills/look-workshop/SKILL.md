@@ -34,7 +34,7 @@ Steps 2–3 may loop; mid-run build OK without reset.
 
 - Look = HTML under `body`. No chrome markup in HTML.
 - Tokens in `look.css` only — no raw hex / `bg-[#…]` in markup. Token names follow shadcn variables (`--background`, `--primary`, …).
-- Images under `workspace/public/assets/`; build merges to `findings/look-workshop/assets/`.
+- Build merges images emitted from `workspace/dist/` into `findings/look-workshop/assets/` (shared, kept across builds).
 - SVG icons: inline in HTML.
 - FAB/drawer = dev chrome only (`annotate.js` + `chrome.css`).
 
