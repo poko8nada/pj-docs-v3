@@ -14,7 +14,7 @@ import * as path from 'node:path';
 // priority: 小さいほど優先。複数スキルが同時にマッチした場合は最上位1件のみ採用する
 // 順位の考え方: より特化（ニッチ）したスキルほど上位。汎用の入口（charter）は最下位
 const RULES: { skill: string; priority: number; keywords: string[] }[] = [
-  { skill: 'look-workshop', priority: 1, keywords: ['look', 'ルック', 'workshop', '見た目'] },
+  { skill: 'look-workshop', priority: 1, keywords: ['look', 'ルック', 'workshopで', '見た目'] },
   { skill: 'skill-sync', priority: 2, keywords: ['スキルの同期', '同期して', 'skill-sync'] },
   {
     skill: 'meta-md-audit',
@@ -31,7 +31,7 @@ const RULES: { skill: string; priority: number; keywords: string[] }[] = [
   {
     skill: 'review',
     priority: 7,
-    keywords: ['レビュー', 'コミットしよ', 'コミットして', 'コミット前に', 'チェックし'],
+    keywords: ['レビューし', 'コミットしよ', 'コミットして', 'コミット前に', 'チェックし'],
   },
   { skill: 'session', priority: 8, keywords: ['次は何', '今セッション', 'スライス'] },
   {
@@ -39,7 +39,7 @@ const RULES: { skill: string; priority: number; keywords: string[] }[] = [
     priority: 9,
     keywords: [
       'チャーター',
-      'charter',
+      'charterし',
       '方針を決め',
       '方針決め',
       '方針をまとめ',

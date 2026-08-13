@@ -3,7 +3,7 @@ description: Reviews code, design, or documents and writes a structured finding 
 mode: subagent
 temperature: 0.1
 reasoningEffort: low
-ssteps: 32
+steps: 32
 permission:
   read: allow
   glob: allow
@@ -49,7 +49,7 @@ Run `git diff` to obtain the changes to review. If the mission specifies staged 
 3. Verify library usage against official docs (context7) and external references (websearch / webfetch). Prefer context7 for library APIs; fetch source code only when context7 is insufficient.
 4. Verify every claim against a source. Do not rely on memory alone.
 
-Note: glob and grep do not traverse hidden directories (e.g. `.opencode/`). When the target lives under a hidden directory, read the files by their explicit paths instead of relying on glob/grep discovery.
+Note: glob and grep do not traverse hidden directories (e.g. `.git`). When the target lives under a hidden directory, read the files by their explicit paths instead of relying on glob/grep discovery.
 
 ## Output
 

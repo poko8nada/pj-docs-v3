@@ -7,6 +7,11 @@ description: Sync skills between the project's Cursor skills directory and openc
 
 Syncs skill directories between the project's Cursor skills directory and the project's opencode skills directory. Global skill directories are out of scope.
 
+## Language
+
+- User-facing output (what the skill presents in chat) is written in Japanese.
+- Item labels, symbols, IDs, and commands stay in English.
+
 ## Commands
 
 Run `node scripts/sync.mjs` from this skill's directory. The agent resolves the skill's base directory, so no `cd` is needed:

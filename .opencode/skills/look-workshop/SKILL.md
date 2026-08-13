@@ -9,6 +9,11 @@ Co-edit workshop look; durable result only via **build**. No GitHub issues.
 
 Steps 2–3 may loop; mid-run build OK without reset.
 
+## Language
+
+- User-facing output (what the skill presents in chat) is written in Japanese.
+- Item labels, symbols, IDs, and commands stay in English.
+
 ## Commands (skill base)
 
 - `node scripts/dev.mjs` — Vite + cmux

@@ -10,6 +10,11 @@ The entry point for turning an aligned discussion into a concrete, agreed file-l
 - The discussion in chat is the means; the header comment is the deliverable.
 - charter writes header comments only — it never touches implementation code.
 
+## Language
+
+- User-facing output (what the skill presents in chat) is written in Japanese.
+- Item labels, symbols, IDs, and commands stay in English.
+
 ## Flow
 
 ### 1. Identify scope

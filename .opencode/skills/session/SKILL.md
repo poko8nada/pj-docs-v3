@@ -7,6 +7,11 @@ description: Propose what to do in the current session as slices. Use when the u
 
 Proposes what to do in the current session. The session plan is a different axis from chartering: chartering records intent as file headers (isDone: false), session decides what to implement now.
 
+## Language
+
+- User-facing output (what the skill presents in chat) is written in Japanese.
+- Item labels, symbols, IDs, and commands stay in English.
+
 ## Flow
 
 1. Read the charted headers (isDone: false) and the latest products/ snapshot. Meta headers are implemented directly, not sliced.

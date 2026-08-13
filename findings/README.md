@@ -6,6 +6,7 @@ Accumulated evaluation and review records. Append-only: the findings content is 
 
 - `feasibility/`: technical feasibility evaluations.
 - `review/`: reviews of code, design, or documents.
+- `stack-eval/`: stack candidate comparisons and adoption runbooks.
 
 ## Flow
 
@@ -16,5 +17,7 @@ Accumulated evaluation and review records. Append-only: the findings content is 
 ## File naming
 
 `YYYY-MM-DD-<seq>.md` — seq is a per-folder 3-digit sequence (001, 002, ...) that **resets daily**: the first finding of a day is 001, the next 002, and so on. The next day starts again at 001 in a new date-prefixed file.
+
+For parallel stack-eval batches, candidates share the batch `seq` and append a slug: `YYYY-MM-DD-<seq>-<slug>.md` (e.g. `2026-08-13-001-nextjs.md`).
 
 The format spec (frontmatter, structure, writing rules) lives in the sub-agent definitions, not here.

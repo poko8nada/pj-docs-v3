@@ -48,6 +48,8 @@ Goal ←→ Discover → Build
    - **Discover layer** (D-name / D-look / D-stack + features): the main work.
      - Defines the product; may revise the Goal layer.
      - D-look applies only when the product has a frontend (`frontend: true` in D-stack).
+     - D-stack is a decision checkpoint: when a choice is undecided, run the stack-eval skill with constraints extracted from G-what / G-outcome / B-deploy.
+     - After the runbook is executed, record the decision in D-stack.
      - Use `references/features-guide.md` for Features granularity.
    - **Build layer** (B-roadmap / B-test / B-deploy / B-scope): follows from Discover.
      - B-deploy heading is `Deploy` for web apps/APIs and `Publish` for libraries/CLIs (the ID stays `B-deploy`).

@@ -7,6 +7,11 @@ description: Generate or improve the root README.md for external audiences. Use 
 
 Root `README.md` only (unless user names another path). The README is the external-facing explanation of the product definition; internal planning stays in products/ and notes.
 
+## Language
+
+- User-facing output (what the skill presents in chat) is written in Japanese.
+- Item labels, symbols, IDs, and commands stay in English.
+
 ## Steps
 
 1. Read the latest products/ snapshot (the source of truth) and inspect the existing README + manifests.

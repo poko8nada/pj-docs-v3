@@ -7,20 +7,26 @@ description: Evaluate the technical feasibility of a proposed approach and recor
 
 Evaluates the technical feasibility of a proposed approach and records the result as an append-only finding. The dedicated sub-agent creates the document; this skill discusses with the user and records the outcome.
 
+## Language
+
+- User-facing output (what the skill presents in chat) is written in Japanese.
+- Item labels, symbols, IDs, and commands stay in English.
+
 ## Procedure
 
 1. Understand the request: what to evaluate, the proposed approach, and any constraints.
-2. Launch the feasibility sub-agent **in the background** via the Task tool (`subagent_type: feasibility`), passing a mission prompt with exactly four fields:
+2. Launch the feasibility sub-agent **in the background**, passing a mission prompt with exactly four fields:
    - Target: <what to evaluate>
    - Background: <why this evaluation>
    - Constraints: <constraints and assumptions>
    - Output: <assigned file path>
-   - Before launching, assign the sub-agent a unique output file: allocate `findings/feasibility/YYYY-MM-DD-<seq>.md` in order (001, 002, ...). The seq resets daily: the first finding of today is `YYYY-MM-DD-001.md` regardless of yesterday's numbers.
+   - Before launching, assign the sub-agent a unique output file: allocate `findings/feasibility/YYYY-MM-DD-<seq>.md` in order (001, 002, ...).
+   - The seq resets daily: the first finding of today is `YYYY-MM-DD-001.md` regardless of yesterday's numbers.
 3. When the sub-agent finishes, it has created the assigned `findings/feasibility/YYYY-MM-DD-<seq>.md` with `date` only (no `outcomes`).
 4. Read the created file and present the findings to the user with this format:
    - `<ID> (<severity>): <finding summary>`
-   - `  - 推奨: <recommendation>`
-   - `  - 決定: 採用 / 不採用?`
+   - `  - Recommendation: <recommendation>`
+   - `  - Decision: adopt / reject?`
    - Present every finding; the user decides each one.
 5. Discuss with the user and obtain the decision for each finding (adopt / reject). There is no pending: every finding is decided.
 6. Fill the `outcomes` field in the frontmatter with the decisions:

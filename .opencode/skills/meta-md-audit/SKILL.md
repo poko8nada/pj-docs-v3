@@ -7,6 +7,11 @@ description: Audit skills and agent definitions in the directory this skill live
 
 Audits the skills and agent definitions in the directory this skill lives in, in two steps: mechanical checks by script, then content checks by the agent.
 
+## Language
+
+- User-facing output (what the skill presents in chat) is written in Japanese.
+- Item labels, symbols, IDs, and commands stay in English.
+
 ## Targets
 
 - **Skills**: directories containing a `SKILL.md` in the parent of this skill's directory.
