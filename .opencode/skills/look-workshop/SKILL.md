@@ -36,7 +36,7 @@ Steps 2–3 may loop; mid-run build OK without reset.
 - Tokens in `look.css` only — no raw hex / `bg-[#…]` in markup. Token names follow shadcn variables (`--background`, `--primary`, …).
 - Build merges images emitted from `workspace/dist/` into `findings/look-workshop/assets/` (shared, kept across builds).
 - SVG icons: inline in HTML.
-- FAB/drawer = dev chrome only (`annotate.js` + `chrome.css`).
+- FAB/drawer = dev chrome only (`src/chrome/` — `annotate.js` + `chrome.css`).
 
 ### data-aid
 
@@ -55,7 +55,7 @@ look-workshop/
 ├── SKILL.md
 ├── defaults/index.html   # defaults for new index.html (copied to workspace on dev/build)
 ├── scripts/{dev,build,reset,_paths}.mjs
-└── workspace/            # Vite workbench — not source of truth
+└── workspace/            # Vite workbench — src/ is source; index.html / dist / comments.json are generated
 ```
 
 ## Handoff

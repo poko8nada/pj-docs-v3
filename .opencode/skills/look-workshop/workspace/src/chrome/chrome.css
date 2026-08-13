@@ -1,4 +1,4 @@
-/* foundation — コメント用クローム（FAB / backdrop / ドロワー / 補助線）。Tailwind 非依存。dev のみ読込。 */
+/* look-workshop — コメント用クローム（FAB / backdrop / ドロワー / 補助線）。Tailwind 非依存。dev のみ読込。 */
 
 /* モーダル背景。開いているときだけ見える。クリックでドロワーを閉じる。 */
 .vl-backdrop {

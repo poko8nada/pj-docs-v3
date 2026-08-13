@@ -8,8 +8,8 @@
 import './look.css';
 
 if (import.meta.env.DEV) {
-  await import('./chrome.css');
-  const { initAnnotate } = await import('./annotate.js');
+  await import('./chrome/chrome.css');
+  const { initAnnotate } = await import('./chrome/annotate.js');
   const comments = await loadComments();
   initAnnotate({ root: document.body, comments });
 }
