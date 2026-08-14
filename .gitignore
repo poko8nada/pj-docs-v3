@@ -33,5 +33,9 @@ lerna-debug.log*
 # misc
 .DS_Store
 
+# 一時型チェック tsconfig（異常終了時に残る防御）
+.typecheck-staged-*.json
+.qg-tsconfig-*.json
+
 # stack-eval scaffolds
 .stack-eval/
