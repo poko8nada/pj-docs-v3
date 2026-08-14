@@ -3,6 +3,7 @@
  * PURPOSE: フックごとのハンドラチェーンを定義する (isDone: true)
  * STATUS: sizeDrift=false, driftSuspected=false
  */
+import * as drift from '../handlers/drift.mjs';
 import * as format from '../handlers/format.mjs';
 import * as guard from '../handlers/guard.mjs';
 import * as guardCommand from '../handlers/guard-command.mjs';
@@ -10,6 +11,7 @@ import * as verify from '../handlers/verify.mjs';
 
 /**
  * フックごとのハンドラチェーン。配列の先頭から順に実行する。
+ * stop は quality (verify) → drift の順。drift は整形済みの確定状態を読むため後段に置く。
  */
 export const HOOK_CHAIN = {
   beforeReadFile: [guard],
@@ -17,10 +19,10 @@ export const HOOK_CHAIN = {
   beforeShellExecution: [guard, guardCommand],
   afterFileEdit: [format],
   postToolUse: [format],
-  stop: [verify],
+  stop: [verify, drift],
 };
 
-const ALL_HANDLERS = [guard, guardCommand, format, verify];
+const ALL_HANDLERS = [guard, guardCommand, format, verify, drift];
 
 const DEFAULT_PERMISSION_HOOKS = new Set([
   'beforeReadFile',
