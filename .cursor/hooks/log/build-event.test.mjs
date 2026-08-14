@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { buildLogEvent } from './build-event.mjs';
 
-describe('buildLogEvent', () => {
+describe('buildLogEvent shell and read hooks', () => {
   it('maps beforeShellExecution fields', () => {
     expect(
       buildLogEvent(
@@ -20,6 +20,41 @@ describe('buildLogEvent', () => {
     });
   });
 
+  it('maps beforeReadFile fields', () => {
+    expect(
+      buildLogEvent(
+        {
+          file_path: '/project/README.md',
+          session_id: 'session-1',
+        },
+        'beforeReadFile',
+      ),
+    ).toEqual({
+      hook: 'beforeReadFile',
+      file: '/project/README.md',
+      sessionId: 'session-1',
+    });
+  });
+
+  it('maps afterFileEdit fields', () => {
+    expect(
+      buildLogEvent(
+        {
+          file_path: '/project/src/app.ts',
+          edits: [{ old_string: 'a', new_string: 'b' }],
+          session_id: 'session-1',
+        },
+        'afterFileEdit',
+      ),
+    ).toEqual({
+      hook: 'afterFileEdit',
+      file: '/project/src/app.ts',
+      sessionId: 'session-1',
+    });
+  });
+});
+
+describe('buildLogEvent tool hooks', () => {
   it('maps preToolUse fields', () => {
     expect(
       buildLogEvent(
@@ -61,40 +96,9 @@ describe('buildLogEvent', () => {
       sessionId: 'session-1',
     });
   });
+});
 
-  it('maps beforeReadFile fields', () => {
-    expect(
-      buildLogEvent(
-        {
-          file_path: '/project/README.md',
-          session_id: 'session-1',
-        },
-        'beforeReadFile',
-      ),
-    ).toEqual({
-      hook: 'beforeReadFile',
-      file: '/project/README.md',
-      sessionId: 'session-1',
-    });
-  });
-
-  it('maps afterFileEdit fields', () => {
-    expect(
-      buildLogEvent(
-        {
-          file_path: '/project/src/app.ts',
-          edits: [{ old_string: 'a', new_string: 'b' }],
-          session_id: 'session-1',
-        },
-        'afterFileEdit',
-      ),
-    ).toEqual({
-      hook: 'afterFileEdit',
-      file: '/project/src/app.ts',
-      sessionId: 'session-1',
-    });
-  });
-
+describe('buildLogEvent edge cases', () => {
   it('omits fields that are not present', () => {
     expect(buildLogEvent({ session_id: 'session-1' }, 'afterAgentThought')).toEqual({
       hook: 'afterAgentThought',
