@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
-  FORMAT_CHECK_EXTENSIONS,
   FORMAT_EXTENSIONS,
   hasExtension,
   OXLINT_EXTENSIONS,
+  TYPECHECK_EXTENSIONS,
 } from './file-extensions.mjs';
 
 describe('file-extensions', () => {
@@ -22,13 +22,19 @@ describe('file-extensions', () => {
 
   it('uses oxlint only for js/ts families', () => {
     expect(hasExtension('src/App.tsx', OXLINT_EXTENSIONS)).toBe(true);
+    expect(hasExtension('lib/util.mts', OXLINT_EXTENSIONS)).toBe(true);
+    expect(hasExtension('lib/util.cts', OXLINT_EXTENSIONS)).toBe(true);
     expect(hasExtension('index.html', OXLINT_EXTENSIONS)).toBe(false);
     expect(hasExtension('styles/main.css', OXLINT_EXTENSIONS)).toBe(false);
   });
 
-  it('checks html and css families with oxfmt at stop', () => {
-    expect(hasExtension('index.html', FORMAT_CHECK_EXTENSIONS)).toBe(true);
-    expect(hasExtension('styles/main.less', FORMAT_CHECK_EXTENSIONS)).toBe(true);
-    expect(hasExtension('src/App.tsx', FORMAT_CHECK_EXTENSIONS)).toBe(false);
+  it('typechecks all js/ts families', () => {
+    expect(hasExtension('src/App.ts', TYPECHECK_EXTENSIONS)).toBe(true);
+    expect(hasExtension('src/App.tsx', TYPECHECK_EXTENSIONS)).toBe(true);
+    expect(hasExtension('lib/util.mjs', TYPECHECK_EXTENSIONS)).toBe(true);
+    expect(hasExtension('lib/util.cjs', TYPECHECK_EXTENSIONS)).toBe(true);
+    expect(hasExtension('lib/util.mts', TYPECHECK_EXTENSIONS)).toBe(true);
+    expect(hasExtension('lib/util.cts', TYPECHECK_EXTENSIONS)).toBe(true);
+    expect(hasExtension('index.html', TYPECHECK_EXTENSIONS)).toBe(false);
   });
 });

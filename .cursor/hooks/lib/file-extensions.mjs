@@ -5,7 +5,7 @@
  */
 import { extname } from 'node:path';
 
-const CODE_EXTENSIONS = ['js', 'jsx', 'ts', 'tsx', 'mjs', 'cjs'];
+const CODE_EXTENSIONS = ['js', 'jsx', 'ts', 'tsx', 'mjs', 'cjs', 'mts', 'cts'];
 const MARKUP_EXTENSIONS = ['html', 'htm', 'xhtml'];
 const STYLE_EXTENSIONS = ['css', 'scss', 'sass', 'less'];
 const DOC_EXTENSIONS = ['md', 'mdx'];
@@ -24,16 +24,8 @@ export const FORMAT_EXTENSIONS = new Set([
 /** oxlint で検査する拡張子（JS/TS 系） */
 export const OXLINT_EXTENSIONS = new Set(CODE_EXTENSIONS);
 
-/** stop 時に oxfmt --check する拡張子（js/ts 系以外。lint が担うコードは含まない） */
-export const FORMAT_CHECK_EXTENSIONS = new Set([
-  ...MARKUP_EXTENSIONS,
-  ...STYLE_EXTENSIONS,
-  ...DOC_EXTENSIONS,
-  ...DATA_EXTENSIONS,
-]);
-
-/** typecheck:staged で型検査する拡張子 */
-export const TYPECHECK_EXTENSIONS = new Set(['ts', 'tsx']);
+/** typecheck:staged で型検査する拡張子（opencode の CHECKABLE_EXT に合わせる） */
+export const TYPECHECK_EXTENSIONS = new Set(CODE_EXTENSIONS);
 
 export function extensionOf(filePath) {
   return extname(filePath).slice(1).toLowerCase();
