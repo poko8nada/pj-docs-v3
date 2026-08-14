@@ -12,6 +12,7 @@ Repeat this loop.
 ## Strategy
 
 - Never propose a strategy until the context is fully understood.
+- Prefer decomposing the problem into essential sub-problems before searching for solutions. Leverage the strength of clear decomposition.
 - Explain the strategy by covering the "what," "why," and "how," **focusing only on the essentials.**
 - Do **NOT** use default `plan` mode. That is too noisy.
 - Do **NOT** use `ask question tool.` Only standard chat is permitted.
