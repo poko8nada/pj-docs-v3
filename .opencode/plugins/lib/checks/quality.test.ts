@@ -20,6 +20,7 @@ async function setupProject() {
 }
 
 // 実行ツールを偽装する。--fix は成功し、lint / tsc は引数で渡した出力を返す
+// 出力が空なら exit 0（クリーン）、出力があれば exit 1（問題あり）とする
 const fakeRun =
   (lintOutput = '', tscOutput = '') =>
   async (cmd: string[]): Promise<RunResult> => {
@@ -27,10 +28,10 @@ const fakeRun =
     if (tool === 'oxlint') {
       return cmd.includes('--fix')
         ? { exitCode: 0, stdout: '', stderr: '' }
-        : { exitCode: 1, stdout: lintOutput, stderr: '' };
+        : { exitCode: lintOutput ? 1 : 0, stdout: lintOutput, stderr: '' };
     }
     if (tool === 'tsc') {
-      return { exitCode: 1, stdout: tscOutput, stderr: '' };
+      return { exitCode: tscOutput ? 1 : 0, stdout: tscOutput, stderr: '' };
     }
     return { exitCode: 0, stdout: '', stderr: '' };
   };
@@ -69,6 +70,32 @@ describe('qualityCheck', () => {
     expect(result.followUps).toEqual([]);
   });
 
+  it('reports a follow-up when lint crashes with no matching output', async () => {
+    const { root, target } = await setupProject();
+    const ctx: CheckContext = {
+      root,
+      sessionID: 'test',
+      files: [target],
+      run: async (cmd: string[]): Promise<RunResult> => {
+        if (cmd[0]?.includes('oxlint')) {
+          // クラッシュ: 非零 exit + 数え上げに一致しない出力
+          return { exitCode: 1, stdout: 'oxlint: internal error', stderr: '' };
+        }
+        return { exitCode: 0, stdout: '', stderr: '' };
+      },
+      log: async () => {},
+    };
+
+    const result = await qualityCheck.run(ctx);
+
+    expect(result.followUps).toHaveLength(1);
+    // 数え上げ 0 でも非零 exit なら失敗として報告される
+    expect(result.followUps[0]).toContain('Lint (oxlint): 0 error(s), 0 warning(s)');
+    expect(result.followUps[0]).toContain('oxlint: internal error');
+  });
+});
+
+describe('qualityCheck tooling', () => {
   it('skips tools that are not installed', async () => {
     const { root, target } = await setupProject();
     // 空の bin ディレクトリに戻して oxlint / oxfmt / tsc を未インストール扱いにする

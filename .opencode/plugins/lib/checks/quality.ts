@@ -63,14 +63,16 @@ const truncate = (text: string) => {
 async function lintFiles(ctx: CheckContext, files: string[]) {
   if (!hasTool(ctx.root, 'oxlint')) {
     await ctx.log(SERVICE, 'warn', 'oxlint is not installed. Skipping lint.');
-    return { warnings: 0, errors: 0, output: '' };
+    return { warnings: 0, errors: 0, output: '', exitCode: 0 };
   }
-  const result = await ctx.run([bin(ctx.root, 'oxlint'), ...files], ctx.root);
+  // --format=agent: 出力形式を path:line:col: error rule に固定する
+  // （TTY ではフレーム表示になり、数え上げ正規表現が不一致になるため）
+  const result = await ctx.run([bin(ctx.root, 'oxlint'), '--format=agent', ...files], ctx.root);
   const text = `${result.stdout}\n${result.stderr}`;
   // oxlint の出力形式: "file:line:col: warning rule: msg" / "file:line:col: error rule: msg"
   const warnings = (text.match(/: warning /g) ?? []).length;
   const errors = (text.match(/: error /g) ?? []).length;
-  return { warnings, errors, output: text };
+  return { warnings, errors, output: text, exitCode: result.exitCode };
 }
 
 // 型チェック（tsc）を実行する。.opencode 配下は専用 tsconfig を使う
@@ -180,7 +182,9 @@ export const qualityCheck: IdleCheck = {
     const lint = await lintFiles(ctx, checkTargets);
     const tsc = await typecheckFiles(ctx, checkTargets);
 
-    const hasIssues = lint.warnings + lint.errors > 0 || tsc.errors > 0;
+    // 数え上げで検出できず、かつ exit code が非零の場合はツール障害として失敗扱い
+    // （クラッシュや起動失敗がクリーン扱いで通過するのを防ぐ）
+    const hasIssues = lint.warnings + lint.errors > 0 || lint.exitCode !== 0 || tsc.errors > 0;
     if (!hasIssues) {
       return { followUps: [] };
     }
@@ -191,9 +195,10 @@ export const qualityCheck: IdleCheck = {
       `Checked files: ${files.map((f) => path.relative(root, f)).join(', ')}`,
       '',
     ];
-    if (lint.warnings + lint.errors > 0) {
+    // 検出された問題（数え上げ or ツール障害）を出力する
+    if (lint.warnings + lint.errors > 0 || lint.exitCode !== 0) {
       lines.push(`## Lint (oxlint): ${lint.errors} error(s), ${lint.warnings} warning(s)`);
-      lines.push(truncate(lint.output));
+      lines.push(truncate(lint.output) || '(no output — oxlint may have crashed)');
       lines.push('');
     }
     if (tsc.errors > 0) {
