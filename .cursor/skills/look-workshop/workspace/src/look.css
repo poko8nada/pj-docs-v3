@@ -1,0 +1,44 @@
+/* look-workshop — 見た目の正はここ。トークンは shadcn の変数命名に合わせる。
+   クロームは chrome.css（dev のみ）。HTML に生 hex を散らさない。 */
+@import 'tailwindcss';
+
+/* index.html は gitignore 対象（defaults からの生成物）のため、自動検出されない。
+   明示的にスキャン対象へ加える。 */
+@source "../index.html";
+
+@theme {
+  /* 地と字 */
+  --color-background: #f3efe6;
+  --color-foreground: #1a1a1a;
+
+  /* 主要アクション（ブランドの主色） */
+  --color-primary: #1a1a1a;
+  --color-primary-foreground: #f3efe6;
+
+  /* 補助面 */
+  --color-secondary: color-mix(in srgb, #1a1a1a 10%, transparent);
+  --color-secondary-foreground: #1a1a1a;
+
+  /* 控えめな面と文字 */
+  --color-muted: color-mix(in srgb, #1a1a1a 6%, transparent);
+  --color-muted-foreground: color-mix(in srgb, #1a1a1a 55%, transparent);
+
+  /* 強調（CTA / brand accent） */
+  --color-accent: #c41e3a;
+  --color-accent-foreground: #ffffff;
+
+  /* 破壊的操作 */
+  --color-destructive: #e5484d;
+  --color-destructive-foreground: #ffffff;
+
+  /* 枠線・入力・フォーカスリング */
+  --color-border: color-mix(in srgb, #1a1a1a 15%, transparent);
+  --color-input: color-mix(in srgb, #1a1a1a 25%, transparent);
+  --color-ring: #c41e3a;
+
+  /* 角丸 */
+  --radius-sm: 0.25rem;
+  --radius-md: 0.375rem;
+  --radius-lg: 0.5rem;
+  --radius-xl: 0.75rem;
+}
