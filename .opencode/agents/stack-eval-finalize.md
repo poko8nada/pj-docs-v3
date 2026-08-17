@@ -1,7 +1,7 @@
 ---
 description: Use when finalizing stack-eval findings. Verifies and completes a candidate's comparison finding written by stack-eval-research, and appends the adoption runbook after adoption. One instance per candidate.
 mode: subagent
-model: opencode-go/deepseek-v4-flash
+model: opencode-go/mimo-v2.5
 temperature: 0.1
 reasoningEffort: high
 steps: 20

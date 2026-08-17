@@ -1,7 +1,7 @@
 ---
 description: Use when the technical feasibility of a proposed approach needs evaluation and the result should be recorded in findings/feasibility/.
 mode: subagent
-model: opencode-go/deepseek-v4-flash
+model: opencode-go/mimo-v2.5
 temperature: 0.1
 reasoningEffort: high
 steps: 20

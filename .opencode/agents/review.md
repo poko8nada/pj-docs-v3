@@ -1,7 +1,7 @@
 ---
 description: Use when code, design, or documents need review and the result should be recorded in findings/review/.
 mode: subagent
-model: opencode-go/deepseek-v4-flash
+model: opencode-go/mimo-v2.5
 temperature: 0.1
 reasoningEffort: high
 steps: 32

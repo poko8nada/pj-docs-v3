@@ -1,7 +1,7 @@
 ---
 description: Use when comparing stack candidates. Scaffolds one candidate into .stack-eval/<slug>/, researches it, and writes its comparison finding to findings/stack-eval/. One instance per candidate, launched in parallel.
 mode: subagent
-model: opencode-go/deepseek-v4-flash
+model: opencode-go/mimo-v2.5
 temperature: 0.1
 reasoningEffort: high
 steps: 36
