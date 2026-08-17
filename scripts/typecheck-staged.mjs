@@ -12,8 +12,9 @@ import * as path from 'node:path';
 
 // 型チェックの対象拡張子（.js 系は allowJs で構文まで検査する）
 const CHECKABLE_EXT = new Set(['.ts', '.tsx', '.mts', '.cts', '.js', '.jsx', '.mjs', '.cjs']);
-// 専用 tsconfig を持つディレクトリ（.opencode 配下は別 tsconfig で型チェックする）
+// 専用 tsconfig を持つディレクトリ（.opencode / .commandcode 配下は別 tsconfig で型チェックする）
 const OPENCODE_DIR = '.opencode';
+const COMMANDCODE_DIR = '.commandcode';
 
 const root = process.cwd();
 const bin = (name) => path.join(root, 'node_modules', '.bin', name);
@@ -35,7 +36,9 @@ for (const f of files) {
   const rel = path.relative(root, abs);
   const tsconfig = rel.startsWith(`${OPENCODE_DIR}${path.sep}`)
     ? path.join(root, OPENCODE_DIR, 'tsconfig.json')
-    : path.join(root, 'tsconfig.json');
+    : rel.startsWith(`${COMMANDCODE_DIR}${path.sep}`)
+      ? path.join(root, COMMANDCODE_DIR, 'tsconfig.json')
+      : path.join(root, 'tsconfig.json');
   if (!fs.existsSync(tsconfig)) {
     continue;
   }

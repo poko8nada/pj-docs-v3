@@ -12,7 +12,6 @@ import { fileURLToPath } from 'node:url';
 // ヘッダー対象の拡張子（実コードのみ。テスト / md / 設定は対象外）
 const CODE_EXTENSIONS = new Set(['.ts', '.tsx', '.mts', '.cts', '.js', '.jsx', '.mjs', '.cjs']);
 // ヘッダー対象ディレクトリ（ホワイトリスト。ルート直下のディレクトリ名）
-// スタータープロジェクトのため、将来のプロダクトコード置き場も含める
 const ALLOWED_DIRS = new Set([
   // プロダクトコードの一般的な置き場
   'src',
@@ -22,6 +21,7 @@ const ALLOWED_DIRS = new Set([
   'server',
   'web',
   'api',
+  'worker',
   'frontend',
   'backend',
   'packages',
@@ -30,6 +30,7 @@ const ALLOWED_DIRS = new Set([
   // メタ / 管理系
   '.opencode',
   '.cursor',
+  '.commandcode',
   'scripts',
   'products',
 ]);
@@ -49,6 +50,10 @@ export function isCodeFile(projectRoot, filePath) {
   }
   const base = path.basename(filePath);
   if (/\.(test|spec)\./.test(base)) {
+    return false;
+  }
+  // 型宣言ファイル（.d.ts）は設定・宣言扱いでヘッダー対象外
+  if (base.endsWith('.d.ts')) {
     return false;
   }
   const rel = path.relative(projectRoot, filePath);

@@ -36,8 +36,9 @@ export const RestrictRootPlugin: Plugin = async ({ worktree, directory }) => {
   const xdgConfigHome = process.env.XDG_CONFIG_HOME ?? path.join(os.homedir(), '.config');
   const allowedExternalPaths = [
     path.join(xdgConfigHome, 'opencode'),
-    // Cursor のグローバル設定（スキル等）を読み取れるようにする
+    // Cursor、CommandCodeのグローバル設定（スキル等）を読み取れるようにする
     path.join(os.homedir(), '.cursor'),
+    path.join(os.homedir(), '.commandcode'),
   ];
 
   // read ツールのみ許可する外部パス（例: opencode のセッションログでサブエージェントの実行内容を確認する用途）

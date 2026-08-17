@@ -1,7 +1,6 @@
 # AGENTS.md
 
-Understand the context, then Take the lead in formulating the strategy, finally Implement simply.
-Repeat this loop.
+Understand the context, then Take the lead in formulating the strategy, finally Implement simply. Repeat this loop.
 
 ## Context
 
