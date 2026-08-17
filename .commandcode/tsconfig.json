@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
     "module": "ESNext",
-    "moduleResolution": "Bundler",
+    "moduleResolution": "bundler",
+    "target": "ESNext",
     "lib": ["ESNext"],
     "strict": true,
     "allowJs": true,
@@ -14,9 +14,10 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "allowImportingTsExtensions": true,
-    "types": ["node"]
+    "types": ["node"],
+    "paths": {
+      "@commandcode/harness": ["./mods/types/harness.d.ts"]
+    }
   },
-  "include": ["**/*.ts", "**/*.mts", "**/*.cts"],
-  "exclude": ["node_modules", "dist"]
+  "include": ["mods/**/*.ts"]
 }
