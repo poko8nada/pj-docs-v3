@@ -1,11 +1,11 @@
 ---
 name: skill-sync
-description: Sync skills between the project's Cursor skills directory and opencode skills directory. Use when the user asks to sync, push, pull, check, or compare skills between Cursor and opencode, or when skill contents may have drifted.
+description: Sync skills between the project's Cursor / CommandCode skills directories and the opencode skills directory. Use when the user asks to sync, push, pull, check, or compare skills between harnesses, or when skill contents may have drifted.
 ---
 
 # skill-sync
 
-Syncs skill directories between the project's Cursor skills directory and the project's opencode skills directory. Global skill directories are out of scope.
+Syncs skill directories between the project's opencode, Cursor, and CommandCode skills directories. Global skill directories are out of scope.
 
 ## Language
 
@@ -23,9 +23,9 @@ node scripts/sync.mjs pull --dry-run
 node scripts/sync.mjs pull --skill=readme --skill=look-workshop
 ```
 
-- `check` — show per-skill status without changing anything.
-- `push` — copy opencode skills → Cursor skills.
-- `pull` — copy Cursor skills → opencode skills.
+- `check` — show per-skill status across the three sides without changing anything.
+- `push` — copy opencode skills → Cursor + CommandCode skills.
+- `pull` — copy Cursor + CommandCode skills → opencode skills.
 - `--dry-run` — preview what would be copied without writing.
 - `--force` — copy regardless of mtime.
 - `--skill=<name>` — repeatable; restrict the operation to the listed skills (works with check/push/pull). Unlisted skills are untouched.
@@ -42,7 +42,14 @@ Never run `push` or `pull` without `--dry-run` first.
 
 ## Conflict policy
 
-When a skill exists on both sides, the side with the newer mtime wins. Use `--force` to force the copy direction.
+When a skill exists on both sides of a pair, the side with the newer mtime wins. Use `--force` to force the copy direction.
+
+## Side-specific frontmatter
+
+CommandCode's `SKILL.md` carries a `when_to_use` frontmatter field (skill-trigger keywords) that the other sides do not. The sync preserves it:
+
+- `push` to CommandCode keeps the destination's existing `when_to_use`.
+- `pull` from CommandCode strips `when_to_use` so it never leaks into opencode / Cursor.
 
 ## Exceptions
 
@@ -50,8 +57,9 @@ When a skill exists on both sides, the side with the newer mtime wins. Use `--fo
 
 - `opencode`: skills that live only on the opencode side (never copied to or from the opencode directory).
 - `cursor`: skills that live only on the Cursor side (never copied to or from the Cursor directory).
+- `commandcode`: skills that live only on the CommandCode side (never copied to or from the CommandCode directory).
 
-A flat array (old format) applies to both sides. Unknown skill names are warned about but do not stop the operation. `skill-sync` itself is always excluded.
+A flat array (old format) applies to all sides. Unknown skill names are warned about but do not stop the operation. `skill-sync` itself is always excluded.
 
 ## Notes
 

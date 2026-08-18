@@ -1,6 +1,6 @@
 /*
  * FEATURES: S-sync
- * PURPOSE: opencode と Cursor のスキルディレクトリを双方向同期する (isDone: true)
+ * PURPOSE: opencode・Cursor・CommandCode のスキルディレクトリを双方向同期し、サイド固有フロントマター（when_to_use）を維持する (isDone: true)
  * STATUS: sizeDrift=false, driftSuspected=false
  */
 /**
@@ -24,6 +24,7 @@ import {
   readFileSync,
   statSync,
   utimesSync,
+  writeFileSync,
 } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -47,46 +48,53 @@ const skillFilter = new Set(
 // <project>/.opencode/skills/<skill>/scripts の 4 階層上がルート
 const projectRoot = projectArg ? resolve(projectArg) : resolve(SCRIPT_DIR, '..', '..', '..', '..');
 
-// 同期対象: プロジェクト内の両スキルディレクトリ（グローバルは対象外）
-const opencodeSkillsDir = join(projectRoot, '.opencode', 'skills');
-const cursorSkillsDir = join(projectRoot, '.cursor', 'skills');
+// 同期対象: プロジェクト内の各ハーネスのスキルディレクトリ（グローバルは対象外）
+const SIDES = {
+  opencode: join(projectRoot, '.opencode', 'skills'),
+  cursor: join(projectRoot, '.cursor', 'skills'),
+  commandcode: join(projectRoot, '.commandcode', 'skills'),
+};
 
 // 例外スキル一覧（サイド別）。skill-sync 自身は常に除外。
 const exceptions = readExceptions();
 
-// 例外対象かどうか（skill-sync 自身は常に除外）
+// 例外対象かどうか（skill-sync 自身は常に除外。いずれかのサイドで除外されていれば対象外）
 function isExcluded(skill) {
-  return skill === 'skill-sync' || exceptions.opencode.has(skill) || exceptions.cursor.has(skill);
+  return skill === 'skill-sync' || Object.values(exceptions).some((set) => set.has(skill));
 }
 
 // exceptions.json に存在しないスキル名を警告する（処理は止めない）
-function warnUnknownExceptions(openSkills, cursorSkills) {
-  const known = new Set([...openSkills, ...cursorSkills]);
-  for (const name of [...exceptions.opencode, ...exceptions.cursor]) {
-    if (!known.has(name)) {
-      console.warn(`[skill-sync] exceptions.json に存在しないスキル名: ${name}（無視）`);
+function warnUnknownExceptions(skillsBySide) {
+  const known = new Set(Object.values(skillsBySide).flat());
+  for (const set of Object.values(exceptions)) {
+    for (const name of set) {
+      if (!known.has(name)) {
+        console.warn(`[skill-sync] exceptions.json に存在しないスキル名: ${name}（無視）`);
+      }
     }
   }
 }
 
 function readExceptions() {
+  const empty = { opencode: new Set(), cursor: new Set(), commandcode: new Set() };
   if (!existsSync(EXCEPTIONS_FILE)) {
-    return { opencode: new Set(), cursor: new Set() };
+    return empty;
   }
   try {
     const data = JSON.parse(readFileSync(EXCEPTIONS_FILE, 'utf8'));
     if (Array.isArray(data)) {
-      // 旧形式（配列）: 両側に適用
-      return { opencode: new Set(data), cursor: new Set(data) };
+      // 旧形式（配列）: 全サイドに適用
+      return { opencode: new Set(data), cursor: new Set(data), commandcode: new Set(data) };
     }
-    return {
-      opencode: new Set(Array.isArray(data.opencode) ? data.opencode : []),
-      cursor: new Set(Array.isArray(data.cursor) ? data.cursor : []),
-    };
+    const result = {};
+    for (const side of Object.keys(SIDES)) {
+      result[side] = new Set(Array.isArray(data[side]) ? data[side] : []);
+    }
+    return result;
   } catch (error) {
     console.error(`[skill-sync] Failed to read ${EXCEPTIONS_FILE}: ${error.message}`);
     process.exit(1);
-    return { opencode: new Set(), cursor: new Set() };
+    return empty;
   }
 }
 
@@ -136,8 +144,56 @@ function newestMtime(dir) {
   return newest;
 }
 
+// ---- SKILL.md のサイド固有フロントマター処理 ----
+// commandcode の SKILL.md には when_to_use（スキル発動キーワード）が追加されている。
+// 他サイドへコピーするときは除外し、commandcode へコピーするときは宛先の値を維持する。
+
+// frontmatter（--- で挟まれた先頭ブロック）を分解する
+function splitFrontmatter(text) {
+  const m = text.match(/^---\n([\s\S]*?)\n---\n/);
+  if (!m) {
+    return { head: null, body: text };
+  }
+  return { head: m[1], body: text.slice(m[0].length) };
+}
+
+// when_to_use 行を抽出する（無ければ null）
+function extractWhenToUse(text) {
+  const { head } = splitFrontmatter(text);
+  if (!head) {
+    return null;
+  }
+  return head.split('\n').find((l) => l.startsWith('when_to_use:')) ?? null;
+}
+
+// コピー先の when_to_use を維持した SKILL.md を合成する（push → commandcode 用）
+function mergeWhenToUse(srcText, destText) {
+  const whenToUse = extractWhenToUse(destText);
+  if (!whenToUse) {
+    return srcText;
+  }
+  const src = splitFrontmatter(srcText);
+  if (!src.head) {
+    return srcText;
+  }
+  const lines = src.head.split('\n').filter((l) => !l.startsWith('when_to_use:'));
+  lines.push(whenToUse);
+  return `---\n${lines.join('\n')}\n---\n${src.body}`;
+}
+
+// when_to_use を除外した SKILL.md を返す（pull ← commandcode 用）
+function stripWhenToUse(text) {
+  const fm = splitFrontmatter(text);
+  if (!fm.head) {
+    return text;
+  }
+  const lines = fm.head.split('\n').filter((l) => !l.startsWith('when_to_use:'));
+  return `---\n${lines.join('\n')}\n---\n${fm.body}`;
+}
+
 // スキルディレクトリを再帰コピー（上書きのみ、削除はしない）
-function copySkill(src, dest) {
+// transform が指定されている場合は SKILL.md にだけ適用する（サイド固有フロントマターの維持/除外）
+function copySkill(src, dest, transform = null) {
   mkdirSync(dest, { recursive: true });
   for (const entry of readdirSync(src, { withFileTypes: true })) {
     // 生成物ディレクトリはコピーしない（node_modules のソケット等で失敗するため）
@@ -147,115 +203,125 @@ function copySkill(src, dest) {
     const from = join(src, entry.name);
     const to = join(dest, entry.name);
     if (entry.isDirectory()) {
-      copySkill(from, to);
+      copySkill(from, to, transform);
+    } else if (transform && entry.name === 'SKILL.md') {
+      const srcText = readFileSync(from, 'utf8');
+      const destText = existsSync(to) ? readFileSync(to, 'utf8') : '';
+      writeFileSync(to, transform(srcText, destText));
     } else {
       copyFileSync(from, to);
-      // mtime をソースに合わせる（同期後の ping-pong を防ぐ）
-      const stat = statSync(from);
-      utimesSync(to, stat.atime, stat.mtime);
+    }
+    // mtime をソースに合わせる（同期後の ping-pong を防ぐ）
+    const stat = statSync(from);
+    utimesSync(to, stat.atime, stat.mtime);
+  }
+}
+
+// check: 3辺の状態を表示する
+function runCheck(skillsBySide) {
+  const all = applySkillFilter(
+    [...new Set(Object.values(skillsBySide).flat())].filter((s) => !isExcluded(s)),
+  );
+  for (const [name, dir] of Object.entries(SIDES)) {
+    console.log(`${name.padEnd(12)} ${dir}`);
+  }
+  if (all.length === 0) {
+    console.log('No skills to compare.');
+  } else {
+    console.log('\nSkill status:');
+    for (const skill of all) {
+      const mtimes = {};
+      for (const [name, dir] of Object.entries(SIDES)) {
+        mtimes[name] = skillsBySide[name].includes(skill) ? newestMtime(join(dir, skill)) : 0;
+      }
+      const maxMtime = Math.max(...Object.values(mtimes));
+      const labels = Object.entries(mtimes).map(([name, m]) => {
+        if (m === 0) {
+          return `${name}:missing`;
+        }
+        return m === maxMtime ? `${name}:newest` : `${name}:older`;
+      });
+      console.log(`  ${skill.padEnd(24)} ${labels.join('  ')}`);
+    }
+  }
+  // 除外スキルをサイド別に表示（check で見えるようにする）
+  const shown = Object.entries(exceptions).filter(([side, set]) =>
+    [...set].some((s) => skillsBySide[side].includes(s)),
+  );
+  if (shown.length > 0) {
+    console.log('\nExcluded:');
+    for (const [side, set] of shown) {
+      const names = [...set].filter((s) => skillsBySide[side].includes(s));
+      console.log(`  ${side}-side: ${names.join(', ')}`);
     }
   }
 }
-
-// スキルごとの状態を返す
-function stateOf(skill, openMtime, cursorMtime) {
-  if (cursorMtime === 0) {
-    return 'only-opencode';
-  }
-  if (openMtime === 0) {
-    return 'only-cursor';
-  }
-  if (openMtime === cursorMtime) {
-    return 'same';
-  }
-  return openMtime > cursorMtime ? 'opencode-newer' : 'cursor-newer';
-}
-
-const STATE_LABELS = {
-  'only-opencode': 'only in opencode (push would copy)',
-  'only-cursor': 'only in Cursor (pull would copy)',
-  same: 'same',
-  'opencode-newer': 'newer in opencode (push would copy)',
-  'cursor-newer': 'newer in Cursor (pull would copy)',
-};
 
 function main() {
-  const openSkills = listSkills(opencodeSkillsDir);
-  const cursorSkills = listSkills(cursorSkillsDir);
-  warnUnknownExceptions(openSkills, cursorSkills);
+  const skillsBySide = {};
+  for (const [name, dir] of Object.entries(SIDES)) {
+    skillsBySide[name] = listSkills(dir);
+  }
+  warnUnknownExceptions(skillsBySide);
 
   if (command === 'check') {
-    const all = applySkillFilter(
-      [...new Set([...openSkills, ...cursorSkills])].filter((s) => !isExcluded(s)),
-    );
-    console.log(`opencode: ${opencodeSkillsDir}`);
-    console.log(`Cursor:   ${cursorSkillsDir}`);
-    if (all.length === 0) {
-      console.log('No skills to compare.');
-    } else {
-      console.log('\nSkill status:');
-      for (const skill of all) {
-        const openMtime = openSkills.includes(skill)
-          ? newestMtime(join(opencodeSkillsDir, skill))
-          : 0;
-        const cursorMtime = cursorSkills.includes(skill)
-          ? newestMtime(join(cursorSkillsDir, skill))
-          : 0;
-        const state = stateOf(skill, openMtime, cursorMtime);
-        console.log(`  ${skill.padEnd(24)} ${STATE_LABELS[state]}`);
-      }
-    }
-    // 除外スキルをサイド別に表示（check で見えるようにする）
-    const exOpen = [...exceptions.opencode].filter((s) => openSkills.includes(s));
-    const exCursor = [...exceptions.cursor].filter((s) => cursorSkills.includes(s));
-    if (exOpen.length || exCursor.length) {
-      console.log('\nExcluded:');
-      if (exOpen.length) {
-        console.log(`  opencode-side: ${exOpen.join(', ')}`);
-      }
-      if (exCursor.length) {
-        console.log(`  cursor-side:   ${exCursor.join(', ')}`);
-      }
-    }
+    runCheck(skillsBySide);
     return;
   }
 
-  // push: opencode → Cursor / pull: Cursor → opencode
-  const sourceDir = command === 'push' ? opencodeSkillsDir : cursorSkillsDir;
-  const destDir = command === 'push' ? cursorSkillsDir : opencodeSkillsDir;
+  // push: opencode → {cursor, commandcode} / pull: {cursor, commandcode} → opencode
+  // commandcode との間では SKILL.md の when_to_use を維持/除外する
+  /** @type {Array<[string, string, ((src: string, dest: string) => string) | null]>} */
+  const pairs =
+    command === 'push'
+      ? [
+          ['opencode', 'cursor', null],
+          ['opencode', 'commandcode', mergeWhenToUse],
+        ]
+      : [
+          ['cursor', 'opencode', null],
+          ['commandcode', 'opencode', stripWhenToUse],
+        ];
 
-  if (!existsSync(sourceDir)) {
-    console.error(`[skill-sync] Source directory not found: ${sourceDir}`);
-    process.exit(1);
-  }
+  for (const [srcSide, destSide, transform] of pairs) {
+    const sourceDir = SIDES[srcSide];
+    const destDir = SIDES[destSide];
 
-  const sourceSkills = applySkillFilter(listSkills(sourceDir).filter((s) => !isExcluded(s)));
-  let copied = 0;
-  let skipped = 0;
-
-  for (const skill of sourceSkills) {
-    const src = join(sourceDir, skill);
-    const dest = join(destDir, skill);
-    const srcMtime = newestMtime(src);
-    const destMtime = existsSync(dest) ? newestMtime(dest) : 0;
-
-    // mtime が新しい方が勝ち。--force なら常にコピー
-    if (!force && destMtime > srcMtime) {
-      console.log(`  skip ${skill} (newer in destination)`);
-      skipped++;
-      continue;
+    if (!existsSync(sourceDir)) {
+      console.error(`[skill-sync] Source directory not found: ${sourceDir}`);
+      process.exit(1);
     }
 
-    if (dryRun) {
-      console.log(`  would copy ${skill} (${command})`);
-    } else {
-      copySkill(src, dest);
-      console.log(`  copied ${skill} (${command})`);
-    }
-    copied++;
-  }
+    const sourceSkills = applySkillFilter(listSkills(sourceDir).filter((s) => !isExcluded(s)));
+    let copied = 0;
+    let skipped = 0;
 
-  console.log(`\n${dryRun ? 'Would copy' : 'Copied'} ${copied} skill(s), skipped ${skipped}.`);
+    for (const skill of sourceSkills) {
+      const src = join(sourceDir, skill);
+      const dest = join(destDir, skill);
+      const srcMtime = newestMtime(src);
+      const destMtime = existsSync(dest) ? newestMtime(dest) : 0;
+
+      // mtime が新しい方が勝ち。--force なら常にコピー
+      if (!force && destMtime > srcMtime) {
+        console.log(`  skip ${skill} (newer in destination)`);
+        skipped++;
+        continue;
+      }
+
+      if (dryRun) {
+        console.log(`  would copy ${skill} (${srcSide} → ${destSide})`);
+      } else {
+        copySkill(src, dest, transform);
+        console.log(`  copied ${skill} (${srcSide} → ${destSide})`);
+      }
+      copied++;
+    }
+
+    console.log(
+      `\n${srcSide} → ${destSide}: ${dryRun ? 'Would copy' : 'Copied'} ${copied} skill(s), skipped ${skipped}.`,
+    );
+  }
 }
 
 main();
