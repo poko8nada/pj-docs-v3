@@ -5,6 +5,7 @@ The registry of reusable roles for meta code. Rules:
 - When chartering meta code, match each file to the pattern(s) it instantiates and put the IDs in the header `FEATURES` line.
 - A file may carry multiple IDs only when it genuinely instantiates more than one role.
 - If no pattern fits, propose a new pattern in this table before chartering the file.
+- The machine-readable pattern ID list lives in `constants/index.mjs`; keep it in sync when adding a pattern.
 
 ## H-\* — Harness and hook code
 
@@ -26,6 +27,7 @@ The registry of reusable roles for meta code. Rules:
 - **M-scaffold — template generation**: Creates artifacts from templates or scaffolds.
 - **M-audit — full scan/discovery**: Scans the whole target to find violations or issues. Discovery is the goal (contrast M-report, whose goal is presenting findings).
 - **M-migrate — format migration**: Migrates existing data or files to a new format.
+- **M-source — shared source module**: Project-wide source module that M-* scripts and harness code import but which is not itself an operation. Contrast S-source (skill-owned source).
 
 ## S-\* — Skill scripts
 

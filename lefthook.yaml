@@ -28,7 +28,7 @@ pre-commit:
     - name: validate-headers
       glob: '*.{ts,tsx,mts,cts,js,jsx,mjs,cjs}'
       run: node scripts/validate-headers.mjs check {staged_files}
-      fail_text: 'Header check failed. Files must carry a valid FEATURES / PURPOSE / STATUS header; see .opencode/skills/charter/references/header-format.md'
+      fail_text: 'Header check failed. Files must carry a valid FEATURES / PURPOSE / STATUS header; see skills/charter/references/header-format.md'
 
 pre-push:
   commands:
