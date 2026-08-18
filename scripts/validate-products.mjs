@@ -23,7 +23,7 @@ const DEFAULT_PRODUCTS_DIR = path.resolve(
   '..',
   PRODUCTS_DIR,
 );
-const SECTION_ID = /^(G|D|B|F)-[A-Za-z0-9.]+$/;
+const SECTION_ID = /^(G|D|B|F|C)-[A-Za-z0-9.]+$/;
 const FILE_NAME = /^(\d{4}-\d{2}-\d{2})-(\d{3})\.md$/;
 
 /** @returns {string[]} ソート済みのスナップショットファイル名 */

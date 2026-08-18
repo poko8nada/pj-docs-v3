@@ -1,6 +1,6 @@
 /*
  * FEATURES: S-verify
- * PURPOSE: プロダクト作業ドキュメントの完成度（必須セクション・F-* 定義）を検証する (isDone: true)
+ * PURPOSE: プロダクト作業ドキュメントの完成度（必須セクション・F-* 定義・C-* 形式）を検証する (isDone: true)
  * STATUS: sizeDrift=false, driftSuspected=false
  */
 /**
@@ -111,6 +111,12 @@ function main() {
   }
   if (!ids.some((id) => id.startsWith('F-'))) {
     errors.push(`working document (${first}) has no feature (F-*) section`);
+  }
+  // C-*（Common）は任意。存在する場合は命名形式を検証する
+  for (const cId of ids.filter((id) => id.startsWith('C-'))) {
+    if (!/^C-[a-z][a-z0-9]*$/.test(cId)) {
+      errors.push(`working document (${first}) has an invalid Common ID: ${cId}`);
+    }
   }
   if (missing.length > 0 && files.length > 1) {
     errors.push(

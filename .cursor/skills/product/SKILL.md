@@ -51,6 +51,7 @@ Goal ←→ Discover → Build
      - D-stack is a decision checkpoint: when a choice is undecided, run the stack-eval skill with constraints extracted from G-what / G-outcome / B-deploy.
      - After the runbook is executed, record the decision in D-stack.
      - Use `references/features-guide.md` for Features granularity.
+     - Common units (`C-*`) are optional: add them only when multiple features share the unit (see `references/features-guide.md`).
    - **Build layer** (B-roadmap / B-test / B-deploy / B-scope): follows from Discover.
      - B-deploy heading is `Deploy` for web apps/APIs and `Publish` for libraries/CLIs (the ID stays `B-deploy`).
      - Use `references/test-guide.md` for the B-test section.
