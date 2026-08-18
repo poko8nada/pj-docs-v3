@@ -7,37 +7,18 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type { CheckContext, IdleCheck } from '../idle-chain';
+import {
+  CHECKABLE_EXT,
+  COMMANDCODE_DIR,
+  FORMAT_EXTENSIONS,
+  OPENCODE_DIR,
+} from '../../../../constants/index.mjs';
 
-// ---- 設定 ----
+// ---- 設定（constants/index.mjs から import）----
 // フォーマット対象の拡張子
-const FORMATTABLE_EXT = new Set([
-  '.ts',
-  '.tsx',
-  '.mts',
-  '.cts',
-  '.js',
-  '.jsx',
-  '.mjs',
-  '.cjs',
-  '.json',
-  '.jsonc',
-  '.md',
-  '.mdx',
-  '.css',
-  '.scss',
-  '.sass',
-  '.less',
-  '.yaml',
-  '.yml',
-  '.graphql',
-  '.gql',
-  '.toml',
-  '.html',
-]);
+const formatExt = new Set(FORMAT_EXTENSIONS);
 // lint / typecheck の対象拡張子
-const CHECKABLE_EXT = new Set(['.ts', '.tsx', '.mts', '.cts', '.js', '.jsx', '.mjs', '.cjs']);
-// 専用 tsconfig を持つディレクトリ（.opencode 配下は別 tsconfig で型チェックする）
-const OPENCODE_DIR = '.opencode';
+const checkableExt = new Set(CHECKABLE_EXT);
 // フォローアップメッセージに含める出力の最大行数
 const MAX_OUTPUT_LINES = 40;
 
@@ -88,7 +69,9 @@ async function typecheckFiles(ctx: CheckContext, files: string[]) {
     const rel = path.relative(ctx.root, file);
     const tsconfig = rel.startsWith(`${OPENCODE_DIR}${path.sep}`)
       ? path.join(ctx.root, OPENCODE_DIR, 'tsconfig.json')
-      : path.join(ctx.root, 'tsconfig.json');
+      : rel.startsWith(`${COMMANDCODE_DIR}${path.sep}`)
+        ? path.join(ctx.root, COMMANDCODE_DIR, 'tsconfig.json')
+        : path.join(ctx.root, 'tsconfig.json');
     if (!fs.existsSync(tsconfig)) {
       continue;
     }
@@ -141,12 +124,8 @@ export const qualityCheck: IdleCheck = {
     const { root, files } = ctx;
 
     // 存在しないファイル・対象外の拡張子は除外する
-    const checkTargets = files.filter(
-      (f) => fs.existsSync(f) && CHECKABLE_EXT.has(path.extname(f)),
-    );
-    const formatTargets = files.filter(
-      (f) => fs.existsSync(f) && FORMATTABLE_EXT.has(path.extname(f)),
-    );
+    const checkTargets = files.filter((f) => fs.existsSync(f) && checkableExt.has(path.extname(f)));
+    const formatTargets = files.filter((f) => fs.existsSync(f) && formatExt.has(path.extname(f)));
     if (checkTargets.length === 0 && formatTargets.length === 0) {
       return { followUps: [] };
     }

@@ -7,6 +7,7 @@
 import type { ModApi } from '@commandcode/harness';
 import * as os from 'node:os';
 import * as path from 'node:path';
+import { HOME_DIRS } from '../../constants/index.mjs';
 import { extractPathsFromCommand } from './lib/extract-paths';
 
 // oxlint-disable-next-line no-default-export -- mod ローダーは default export を要求する
@@ -18,16 +19,16 @@ export default function (cmd: ModApi): void {
   // $XDG_CONFIG_HOME を優先、未設定なら ~/.config にフォールバック
   const xdgConfigHome = process.env.XDG_CONFIG_HOME ?? path.join(os.homedir(), '.config');
   const allowedExternalPaths = [
-    path.join(xdgConfigHome, 'opencode'),
+    path.join(xdgConfigHome, HOME_DIRS.opencode),
     // Cursor、CommandCode のグローバル設定（スキル等）を読み取れるようにする
-    path.join(os.homedir(), '.cursor'),
-    path.join(os.homedir(), '.commandcode'),
+    path.join(os.homedir(), HOME_DIRS.cursor),
+    path.join(os.homedir(), HOME_DIRS.commandcode),
   ];
 
   // read ツールのみ許可する外部パス（例: opencode のセッションログでサブエージェントの実行内容を確認する用途）
   // bash や write では引き続き制限されるため、制限が緩くならない
   const xdgDataHome = process.env.XDG_DATA_HOME ?? path.join(os.homedir(), '.local', 'share');
-  const allowedReadPaths = [path.join(xdgDataHome, 'opencode')];
+  const allowedReadPaths = [path.join(xdgDataHome, HOME_DIRS.opencode)];
 
   // ~ をホームディレクトリへ展開し、絶対パスに正規化する
   // path.resolve を使うため、root が "/" の場合も正しく判定できる

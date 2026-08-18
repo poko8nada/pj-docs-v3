@@ -16,10 +16,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { PRODUCTS_DIR } from '../constants/index.mjs';
 
 const DEFAULT_PRODUCTS_DIR = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
-  '../products',
+  '..',
+  PRODUCTS_DIR,
 );
 const SECTION_ID = /^(G|D|B|F)-[A-Za-z0-9.]+$/;
 const FILE_NAME = /^(\d{4}-\d{2}-\d{2})-(\d{3})\.md$/;

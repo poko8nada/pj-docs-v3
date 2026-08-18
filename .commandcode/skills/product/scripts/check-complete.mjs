@@ -14,10 +14,12 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { PRODUCTS_DIR } from '../../../../constants/index.mjs';
 
-const PRODUCTS_DIR = path.resolve(
+const PRODUCTS_DIR_ABS = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
-  '../../../../products',
+  '../../../../',
+  PRODUCTS_DIR,
 );
 const FILE_NAME = /^(\d{4}-\d{2}-\d{2})-(\d{3})\.md$/;
 const REQUIRED_IDS = [
@@ -36,11 +38,11 @@ const FRONTEND_IDS = ['D-look'];
 
 /** @returns {string[]} ソート済みのスナップショットファイル名 */
 function listSnapshots() {
-  if (!fs.existsSync(PRODUCTS_DIR)) {
+  if (!fs.existsSync(PRODUCTS_DIR_ABS)) {
     return [];
   }
   return fs
-    .readdirSync(PRODUCTS_DIR)
+    .readdirSync(PRODUCTS_DIR_ABS)
     .filter((f) => FILE_NAME.test(f))
     .toSorted();
 }
@@ -88,7 +90,7 @@ function main() {
   }
 
   const first = files[0];
-  const text = fs.readFileSync(path.join(PRODUCTS_DIR, first), 'utf8');
+  const text = fs.readFileSync(path.join(PRODUCTS_DIR_ABS, first), 'utf8');
   const ids = sectionIds(text);
   const errors = [];
 

@@ -7,34 +7,12 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { ALLOWED_DIRS, CODE_EXTENSIONS, SKIP_DIRS } from '../../../../constants/index.mjs';
 
-// ---- 設定 ----
-// ヘッダー対象の拡張子（実コードのみ。テスト / md / 設定は対象外）
-const CODE_EXTENSIONS = new Set(['.ts', '.tsx', '.mts', '.cts', '.js', '.jsx', '.mjs', '.cjs']);
-// ヘッダー対象ディレクトリ（ホワイトリスト。ルート直下のディレクトリ名）
-// スタータープロジェクトのため、将来のプロダクトコード置き場も含める
-const ALLOWED_DIRS = new Set([
-  // プロダクトコードの一般的な置き場
-  'src',
-  'app',
-  'pages',
-  'client',
-  'server',
-  'web',
-  'api',
-  'frontend',
-  'backend',
-  'packages',
-  'apps',
-  'libs',
-  // メタ / 管理系
-  '.opencode',
-  '.cursor',
-  'scripts',
-  'products',
-]);
-// 依存・生成物ディレクトリ（どの階層でも除外）
-const SKIP_DIR_NAMES = new Set(['node_modules', 'dist', '.git']);
+// ---- 設定（constants/index.mjs から import）----
+const codeExtensions = new Set(CODE_EXTENSIONS);
+const allowedDirs = new Set(ALLOWED_DIRS);
+const skipDirNames = new Set(SKIP_DIRS);
 
 // プロジェクトルート（スクリプトの場所から解決する。どの cwd からでも動く）
 const PROJECT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../../../..');
@@ -42,7 +20,7 @@ const PROJECT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), 
 /** 実コードファイルかどうか（拡張子・テスト・ホワイトリストで判定） */
 export function isCodeFile(rel) {
   const ext = path.extname(rel).toLowerCase();
-  if (!CODE_EXTENSIONS.has(ext)) {
+  if (!codeExtensions.has(ext)) {
     return false;
   }
   const base = path.basename(rel);
@@ -50,7 +28,7 @@ export function isCodeFile(rel) {
     return false;
   }
   // 依存・生成物ディレクトリはどの階層でも対象外
-  if (rel.split('/').some((seg) => SKIP_DIR_NAMES.has(seg))) {
+  if (rel.split('/').some((seg) => skipDirNames.has(seg))) {
     return false;
   }
   // ルート直下のファイル、または許可ディレクトリ配下のみ対象
@@ -58,7 +36,7 @@ export function isCodeFile(rel) {
   if (segments.length === 1) {
     return true;
   }
-  return ALLOWED_DIRS.has(segments[0]);
+  return allowedDirs.has(segments[0]);
 }
 
 /** ヘッダーコメントを解析する。見つからなければ null */
@@ -87,7 +65,7 @@ function walkFiles(dir) {
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const abs = path.join(dir, entry.name);
     if (entry.isDirectory()) {
-      if (SKIP_DIR_NAMES.has(entry.name)) {
+      if (skipDirNames.has(entry.name)) {
         continue;
       }
       files.push(...walkFiles(abs));
@@ -105,7 +83,7 @@ export function collectHeaders(projectRoot = PROJECT_ROOT) {
   for (const entry of fs.readdirSync(projectRoot, { withFileTypes: true })) {
     const abs = path.join(projectRoot, entry.name);
     if (entry.isDirectory()) {
-      if (ALLOWED_DIRS.has(entry.name) && !SKIP_DIR_NAMES.has(entry.name)) {
+      if (allowedDirs.has(entry.name) && !skipDirNames.has(entry.name)) {
         absFiles.push(...walkFiles(abs));
       }
     } else if (entry.isFile()) {

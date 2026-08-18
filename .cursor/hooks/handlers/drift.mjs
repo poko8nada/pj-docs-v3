@@ -5,37 +5,24 @@
  */
 import { existsSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { extname, isAbsolute, join, relative, sep } from 'node:path';
+import {
+  ALLOWED_DIRS,
+  CODE_EXTENSIONS,
+  HEADER_FORMAT_PATH,
+  SKIP_DIRS,
+} from '../../../constants/index.mjs';
 import { runCommand } from '../lib/run-command.mjs';
 
 export const name = 'drift';
 
-// ヘッダー対象の拡張子（実コードのみ。テスト / md / 設定は対象外）
-const CODE_EXTENSIONS = new Set(['.ts', '.tsx', '.mts', '.cts', '.js', '.jsx', '.mjs', '.cjs']);
+// ヘッダー対象の拡張子・ディレクトリ（constants/index.mjs から import）
+const codeExtensions = new Set(CODE_EXTENSIONS);
+const allowedDirs = new Set(ALLOWED_DIRS);
+const skipDirNames = new Set(SKIP_DIRS);
 // ドリフト判定の閾値（opencode drift-gate より移植）
 const SIZE_DRIFT_MAX_LINES = 300;
 const DRIFT_SUSPECTED_RATIO = 0.5;
 const DRIFT_SUSPECTED_MIN_LINES = 100;
-// ヘッダー対象ディレクトリ（ホワイトリスト。ルート直下のディレクトリ名）
-const ALLOWED_DIRS = new Set([
-  'src',
-  'app',
-  'pages',
-  'client',
-  'server',
-  'web',
-  'api',
-  'frontend',
-  'backend',
-  'packages',
-  'apps',
-  'libs',
-  '.opencode',
-  '.cursor',
-  'scripts',
-  'products',
-]);
-// 依存・生成物ディレクトリ（どの階層でも除外）
-const SKIP_DIR_NAMES = new Set(['node_modules', 'dist', '.git']);
 // フォローアップメッセージに含める出力の最大行数
 const MAX_OUTPUT_LINES = 40;
 
@@ -99,7 +86,7 @@ function isRegularFile(abs) {
 // 実コードファイルかどうか（拡張子・テスト・ホワイトリストで判定）
 function isCodeFile(rel) {
   const ext = extname(rel).toLowerCase();
-  if (!CODE_EXTENSIONS.has(ext)) {
+  if (!codeExtensions.has(ext)) {
     return false;
   }
   const base = rel.split(/[\\/]/).at(-1) ?? '';
@@ -108,12 +95,12 @@ function isCodeFile(rel) {
   }
   // 依存・生成物ディレクトリはどの階層でも対象外
   const posixRel = rel.split(sep).join('/');
-  if (posixRel.split('/').some((seg) => SKIP_DIR_NAMES.has(seg))) {
+  if (posixRel.split('/').some((seg) => skipDirNames.has(seg))) {
     return false;
   }
   // 許可ディレクトリ配下のみ対象（ルート直下は設定ファイル等が置かれるため一律対象外）
   const segments = posixRel.split('/');
-  return segments.length > 1 && ALLOWED_DIRS.has(segments[0]);
+  return segments.length > 1 && allowedDirs.has(segments[0]);
 }
 
 // 実コード行数を数える（コメント・空行を除く。ドリフト判定としては十分な近似）
@@ -254,7 +241,7 @@ function buildHeaderIssuesMessage(issues) {
     '',
     truncate(issues.join('\n')),
     '## Instructions',
-    '- Add or fix the header comment per .opencode/skills/charter/references/header-format.md',
+    '- Add or fix the header comment per ' + HEADER_FORMAT_PATH,
     '- Use the charter skill to record intent (isDone: false) or update an existing header.',
   ].join('\n');
 }

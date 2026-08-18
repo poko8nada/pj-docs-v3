@@ -7,45 +7,25 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  ALLOWED_DIRS,
+  CODE_EXTENSIONS,
+  PATTERN_IDS,
+  PRODUCTS_DIR,
+  SKIP_DIRS,
+} from '../constants/index.mjs';
 
-// ---- 設定 ----
-// ヘッダー対象の拡張子（実コードのみ。テスト / md / 設定は対象外）
-const CODE_EXTENSIONS = new Set(['.ts', '.tsx', '.mts', '.cts', '.js', '.jsx', '.mjs', '.cjs']);
-// ヘッダー対象ディレクトリ（ホワイトリスト。ルート直下のディレクトリ名）
-const ALLOWED_DIRS = new Set([
-  // プロダクトコードの一般的な置き場
-  'src',
-  'app',
-  'pages',
-  'client',
-  'server',
-  'web',
-  'api',
-  'worker',
-  'frontend',
-  'backend',
-  'packages',
-  'apps',
-  'libs',
-  // メタ / 管理系
-  '.opencode',
-  '.cursor',
-  '.commandcode',
-  'scripts',
-  'products',
-]);
-// 依存・生成物ディレクトリ（どの階層でも除外）
-const SKIP_DIR_NAMES = new Set(['node_modules', 'dist', '.git']);
-// パターン表と products/ の場所（プロジェクトルート基準）
-const PATTERNS_PATH = '.opencode/skills/charter/references/patterns.md';
-const PRODUCTS_DIR = 'products';
+// ---- 設定（constants/index.mjs から import）----
+const codeExtensions = new Set(CODE_EXTENSIONS);
+const allowedDirs = new Set(ALLOWED_DIRS);
+const skipDirNames = new Set(SKIP_DIRS);
 
 /**
  * 実コードファイルかどうか（拡張子・テスト・ホワイトリストで判定）
  */
 export function isCodeFile(projectRoot, filePath) {
   const ext = path.extname(filePath).toLowerCase();
-  if (!CODE_EXTENSIONS.has(ext)) {
+  if (!codeExtensions.has(ext)) {
     return false;
   }
   const base = path.basename(filePath);
@@ -58,13 +38,13 @@ export function isCodeFile(projectRoot, filePath) {
   }
   const rel = path.relative(projectRoot, filePath);
   // 依存・生成物ディレクトリはどの階層でも対象外
-  if (rel.split('/').some((seg) => SKIP_DIR_NAMES.has(seg))) {
+  if (rel.split('/').some((seg) => skipDirNames.has(seg))) {
     return false;
   }
   // 許可ディレクトリ配下のみ対象（ルート直下は設定ファイル等が置かれるため一律対象外）
   // ルート直下の .ts/.js（forConfig.ts 等）を実コードと誤判定しないための規約
   const segments = rel.split('/');
-  return segments.length > 1 && ALLOWED_DIRS.has(segments[0]);
+  return segments.length > 1 && allowedDirs.has(segments[0]);
 }
 
 /**
@@ -91,22 +71,6 @@ export function parseHeaderText(text) {
  */
 export function parseHeader(filePath) {
   return parseHeaderText(fs.readFileSync(filePath, 'utf8'));
-}
-
-/**
- * パターン表から有効な H-* / M-* ID を収集する。
- */
-export function loadPatternIds(projectRoot) {
-  const patternsPath = path.join(projectRoot, PATTERNS_PATH);
-  if (!fs.existsSync(patternsPath)) {
-    return new Set();
-  }
-  const text = fs.readFileSync(patternsPath, 'utf8');
-  const ids = new Set();
-  for (const m of text.matchAll(/\*\*([HM]-[a-z0-9-]+)/g)) {
-    ids.add(m[1]);
-  }
-  return ids;
 }
 
 /**
@@ -137,7 +101,7 @@ export function loadFeatureIds(projectRoot) {
  * ヘッダー検証。違反の一覧を返す（空配列なら問題なし）。
  */
 export function collectViolations(projectRoot, files) {
-  const patternIds = loadPatternIds(projectRoot);
+  const patternIds = new Set(PATTERN_IDS);
   const featureIds = loadFeatureIds(projectRoot);
   const violations = [];
 

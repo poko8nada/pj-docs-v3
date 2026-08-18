@@ -7,10 +7,18 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import type { CheckContext, IdleCheck } from '../idle-chain';
+import {
+  ALLOWED_DIRS,
+  CODE_EXTENSIONS,
+  HEADER_FORMAT_PATH,
+  SKIP_DIRS,
+} from '../../../../constants/index.mjs';
 
 // ---- 設定 ----
-// ヘッダー対象の拡張子（実コードのみ。テスト / md / 設定は対象外）
-const CODE_EXTENSIONS = new Set(['.ts', '.tsx', '.mts', '.cts', '.js', '.jsx', '.mjs', '.cjs']);
+// ヘッダー対象の拡張子・ディレクトリ（constants/index.mjs から import）
+const codeExtensions = new Set(CODE_EXTENSIONS);
+const allowedDirs = new Set(ALLOWED_DIRS);
+const skipDirNames = new Set(SKIP_DIRS);
 // ドリフト判定の閾値（緩めに開始し、実データで調整する）
 // sizeDrift: 実コード行数（コメント・空行を除く）の上限。超えたらリファクタ前提で PURPOSE も変わる
 const SIZE_DRIFT_MAX_LINES = 300;
@@ -18,31 +26,6 @@ const SIZE_DRIFT_MAX_LINES = 300;
 // 小さいファイルは割合が跳ねるため、実コード行数が一定以上の場合のみ判定する
 const DRIFT_SUSPECTED_RATIO = 0.5;
 const DRIFT_SUSPECTED_MIN_LINES = 100;
-// ヘッダー対象ディレクトリ（ホワイトリスト。ルート直下のディレクトリ名）
-// スタータープロジェクトのため、将来のプロダクトコード置き場も含める
-const ALLOWED_DIRS = new Set([
-  // プロダクトコードの一般的な置き場
-  'src',
-  'app',
-  'pages',
-  'client',
-  'server',
-  'web',
-  'api',
-  'frontend',
-  'backend',
-  'packages',
-  'apps',
-  'libs',
-  // メタ / 管理系
-  '.opencode',
-  '.cursor',
-  '.commandcode',
-  'scripts',
-  'products',
-]);
-// 依存・生成物ディレクトリ（どの階層でも除外）
-const SKIP_DIR_NAMES = new Set(['node_modules', 'dist', '.git']);
 // フォローアップメッセージに含める出力の最大行数
 const MAX_OUTPUT_LINES = 40;
 
@@ -51,7 +34,7 @@ const SERVICE = 'drift-gate';
 // 実コードファイルかどうか（拡張子・テスト・ホワイトリストで判定）
 const isCodeFile = (rel: string) => {
   const ext = path.extname(rel).toLowerCase();
-  if (!CODE_EXTENSIONS.has(ext)) {
+  if (!codeExtensions.has(ext)) {
     return false;
   }
   const base = path.basename(rel);
@@ -65,13 +48,13 @@ const isCodeFile = (rel: string) => {
   // 依存・生成物ディレクトリはどの階層でも対象外
   // （Windows では path.relative がバックスラッシュ区切りを返すため、posix 形式に正規化してから分割する）
   const posixRel = rel.split(path.sep).join('/');
-  if (posixRel.split('/').some((seg) => SKIP_DIR_NAMES.has(seg))) {
+  if (posixRel.split('/').some((seg) => skipDirNames.has(seg))) {
     return false;
   }
   // 許可ディレクトリ配下のみ対象（ルート直下は設定ファイル等が置かれるため一律対象外）
   // ルート直下の .ts/.js（forConfig.ts 等）を実コードと誤判定しないための規約
   const segments = posixRel.split('/');
-  return segments.length > 1 && ALLOWED_DIRS.has(segments[0]);
+  return segments.length > 1 && allowedDirs.has(segments[0]);
 };
 
 // 実コード行数を数える（コメント・空行を除く。ドリフト判定としては十分な近似）
@@ -220,7 +203,7 @@ function buildHeaderIssuesMessage(issues: string[]): string {
     '',
     truncate(issues.join('\n')),
     '## Instructions',
-    '- Add or fix the header comment per .opencode/skills/charter/references/header-format.md',
+    '- Add or fix the header comment per ' + HEADER_FORMAT_PATH,
     '- Use the charter skill to record intent (isDone: false) or update an existing header.',
   ].join('\n');
 }

@@ -27,6 +27,7 @@ import {
 } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { SKIP_DIRS } from '../../../../constants/index.mjs';
 
 const SCRIPT_DIR = dirname(fileURLToPath(import.meta.url));
 const SKILL_DIR = resolve(SCRIPT_DIR, '..');
@@ -114,7 +115,7 @@ function listSkills(dir) {
 }
 
 // 同期対象外の生成物ディレクトリ（どの階層でも除外。コピーにも mtime 判定にも含めない）
-const SKIP_DIR_NAMES = new Set(['node_modules', 'dist', '.git']);
+const skipDirNames = new Set(SKIP_DIRS);
 
 // スキル内で最も新しいファイルの mtime（ミリ秒単位に丸める）
 // サブミリ秒の差で同期が ping-pong するのを防ぐ
@@ -122,7 +123,7 @@ function newestMtime(dir) {
   let newest = 0;
   for (const entry of readdirSync(dir, { withFileTypes: true })) {
     // 生成物ディレクトリは mtime 判定から除外する
-    if (entry.isDirectory() && SKIP_DIR_NAMES.has(entry.name)) {
+    if (entry.isDirectory() && skipDirNames.has(entry.name)) {
       continue;
     }
     const p = join(dir, entry.name);
@@ -140,7 +141,7 @@ function copySkill(src, dest) {
   mkdirSync(dest, { recursive: true });
   for (const entry of readdirSync(src, { withFileTypes: true })) {
     // 生成物ディレクトリはコピーしない（node_modules のソケット等で失敗するため）
-    if (entry.isDirectory() && SKIP_DIR_NAMES.has(entry.name)) {
+    if (entry.isDirectory() && skipDirNames.has(entry.name)) {
       continue;
     }
     const from = join(src, entry.name);

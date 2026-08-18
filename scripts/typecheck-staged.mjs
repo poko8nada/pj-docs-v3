@@ -9,12 +9,10 @@
 import { spawnSync } from 'node:child_process';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import { CHECKABLE_EXT, COMMANDCODE_DIR, OPENCODE_DIR } from '../constants/index.mjs';
 
 // 型チェックの対象拡張子（.js 系は allowJs で構文まで検査する）
-const CHECKABLE_EXT = new Set(['.ts', '.tsx', '.mts', '.cts', '.js', '.jsx', '.mjs', '.cjs']);
-// 専用 tsconfig を持つディレクトリ（.opencode / .commandcode 配下は別 tsconfig で型チェックする）
-const OPENCODE_DIR = '.opencode';
-const COMMANDCODE_DIR = '.commandcode';
+const checkableExt = new Set(CHECKABLE_EXT);
 
 const root = process.cwd();
 const bin = (name) => path.join(root, 'node_modules', '.bin', name);
@@ -22,7 +20,7 @@ const bin = (name) => path.join(root, 'node_modules', '.bin', name);
 // 引数から対象ファイルを抽出（存在する ts/tsx のみ）
 const files = process.argv.slice(2).filter((f) => {
   const abs = path.isAbsolute(f) ? f : path.join(root, f);
-  return fs.existsSync(abs) && CHECKABLE_EXT.has(path.extname(abs));
+  return fs.existsSync(abs) && checkableExt.has(path.extname(abs));
 });
 
 if (files.length === 0) {
