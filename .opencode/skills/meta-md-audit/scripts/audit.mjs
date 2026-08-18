@@ -26,7 +26,7 @@ const targetDir = resolve(dirIdx !== -1 ? args[dirIdx + 1] : DEFAULT_TARGET);
 const json = args.includes('--json');
 
 // 監査対象の列挙
-// skill: SKILL.md を持つディレクトリ。agent: 親ディレクトリの agents/*.md（opencode / Cursor 共通の複数形）。
+// skill: SKILL.md を持つディレクトリ。agent: 親ディレクトリの agents/*.md
 // agents の解決は skills の親を見るため、このスクリプトをどちらに配置しても自分自身の環境に従う。
 function listTargets(dir) {
   if (!existsSync(dir)) {

@@ -1,12 +1,12 @@
 /*
  * FEATURES: H-gate
- * PURPOSE: プロジェクトルート外のファイルアクセスを制限し、read ツールのみ追加の外部パスを許可する (isDone: true)
+ * PURPOSE: プロジェクトルート外のファイルアクセスを制限し、read ツールと読み取り専用コマンドで追加の外部パスを許可する (isDone: true)
  * STATUS: sizeDrift=false, driftSuspected=false
  */
 import type { Plugin } from '@opencode-ai/plugin';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { HOME_DIRS } from '../../constants/index.mjs';
+import { HOME_DIRS, READ_ONLY_COMMANDS } from '../../constants/index.mjs';
 
 // bash command から絶対 path を抽出（heuristic）
 //  /path or ~/path で始まり、空白/引用/特殊文字以外が続くものを path とみなす
@@ -26,6 +26,37 @@ const extractPathsFromCommand = (command: string): string[] => {
   }
   return paths;
 };
+
+// 読み取り専用コマンドのホワイトリスト（constants/index.mjs から import）
+// sed / awk は -i 等で書き込み得るため含めない
+const readOnlyCommands = new Set(READ_ONLY_COMMANDS);
+
+// 出力リダイレクト（> / >> / 2> / 2>> / &> / 1> 等）を検出する
+// <<（heredoc）は読み取り入力なので対象外
+const REDIRECT_RE = /(^|[^<])([0-9]?>>?|&>>?)/;
+
+/**
+ * コマンドが読み取り専用かどうか（先頭トークン + リダイレクト有無で判定）。
+ * リダイレクトを含む場合は書き込みの可能性があるため読み取り専用とみなさない。
+ */
+export function isReadOnlyCommand(command: string): boolean {
+  if (REDIRECT_RE.test(command)) {
+    return false;
+  }
+  const tokens = command.trim().split(/\s+/);
+  let bin = tokens[0] ?? '';
+  // 環境変数代入（FOO=bar cmd ...）をスキップ
+  while (bin.includes('=') && tokens.length > 1) {
+    tokens.shift();
+    bin = tokens[0] ?? '';
+  }
+  // 権限昇格・ラッパー接頭辞（sudo / env / command）をスキップ
+  if (bin === 'sudo' || bin === 'env' || bin === 'command') {
+    tokens.shift();
+    bin = tokens[0] ?? '';
+  }
+  return readOnlyCommands.has(bin);
+}
 
 export const RestrictRootPlugin: Plugin = async ({ worktree, directory }) => {
   // directory（プロジェクトディレクトリ）を優先し、未設定なら worktree にフォールバック
@@ -90,6 +121,8 @@ export const RestrictRootPlugin: Plugin = async ({ worktree, directory }) => {
       // bash tool: command を parse して path を check
       if (input.tool === 'bash' || input.tool === 'shell') {
         const command = String(output?.args?.command ?? '');
+        // 読み取り専用コマンドは allowedReadPaths 配下へのアクセスを許可する
+        const isRead = isReadOnlyCommand(command);
         for (const p of extractPathsFromCommand(command)) {
           if (p.startsWith('-')) {
             continue;
@@ -97,7 +130,7 @@ export const RestrictRootPlugin: Plugin = async ({ worktree, directory }) => {
           if (p === '/dev/null') {
             continue;
           }
-          checkPath(p, false);
+          checkPath(p, isRead);
         }
         return;
       }

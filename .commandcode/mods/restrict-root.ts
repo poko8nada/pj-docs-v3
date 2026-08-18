@@ -1,14 +1,45 @@
 /*
  * FEATURES: H-gate
- * PURPOSE: プロジェクトルート外のファイルアクセスを制限し、read ツールのみ追加の外部パスを許可する (isDone: true)
+ * PURPOSE: プロジェクトルート外のファイルアクセスを制限し、read ツールと読み取り専用コマンドで追加の外部パスを許可する (isDone: true)
  * STATUS: sizeDrift=false, driftSuspected=false
  */
 
 import type { ModApi } from '@commandcode/harness';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { HOME_DIRS } from '../../constants/index.mjs';
+import { HOME_DIRS, READ_ONLY_COMMANDS } from '../../constants/index.mjs';
 import { extractPathsFromCommand } from './lib/extract-paths';
+
+// 出力リダイレクト（> / >> / 2> / 2>> / &> / 1> 等）を検出する
+// <<（heredoc）は読み取り入力なので対象外
+const REDIRECT_RE = /(^|[^<])([0-9]?>>?|&>>?)/;
+
+// 読み取り専用コマンドのホワイトリスト（constants/index.mjs から import）
+// sed / awk は -i 等で書き込み得るため含めない
+const readOnlyCommands = new Set(READ_ONLY_COMMANDS);
+
+/**
+ * コマンドが読み取り専用かどうか（先頭トークン + リダイレクト有無で判定）。
+ * リダイレクトを含む場合は書き込みの可能性があるため読み取り専用とみなさない。
+ */
+export function isReadOnlyCommand(command: string): boolean {
+  if (REDIRECT_RE.test(command)) {
+    return false;
+  }
+  const tokens = command.trim().split(/\s+/);
+  let bin = tokens[0] ?? '';
+  // 環境変数代入（FOO=bar cmd ...）をスキップ
+  while (bin.includes('=') && tokens.length > 1) {
+    tokens.shift();
+    bin = tokens[0] ?? '';
+  }
+  // 権限昇格・ラッパー接頭辞（sudo / env / command）をスキップ
+  if (bin === 'sudo' || bin === 'env' || bin === 'command') {
+    tokens.shift();
+    bin = tokens[0] ?? '';
+  }
+  return readOnlyCommands.has(bin);
+}
 
 // oxlint-disable-next-line no-default-export -- mod ローダーは default export を要求する
 export default function (cmd: ModApi): void {
@@ -74,6 +105,8 @@ export default function (cmd: ModApi): void {
       // shell_command: command を parse して path を check
       if (toolName === 'shell_command') {
         const command = typeof input.command === 'string' ? input.command : '';
+        // 読み取り専用コマンドは allowedReadPaths 配下へのアクセスを許可する
+        const isRead = isReadOnlyCommand(command);
         for (const p of extractPathsFromCommand(command)) {
           if (p.startsWith('-')) {
             continue;
@@ -81,7 +114,7 @@ export default function (cmd: ModApi): void {
           if (p === '/dev/null') {
             continue;
           }
-          const err = checkPath(p, false);
+          const err = checkPath(p, isRead);
           if (err) {
             return { block: true, additionalContext: err };
           }

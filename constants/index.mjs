@@ -1,6 +1,6 @@
 /*
  * FEATURES: M-source
- * PURPOSE: プロジェクト共通の機械可読定数（拡張子・ディレクトリ名・パス・パターンID）を提供する (isDone: true)
+ * PURPOSE: プロジェクト共通の機械可読定数（拡張子・ディレクトリ名・パス・パターンID・読み取り専用コマンド）を提供する (isDone: true)
  * STATUS: sizeDrift=false, driftSuspected=false
  */
 
@@ -107,3 +107,36 @@ export const HOME_DIRS = {
   commandcode: '.commandcode',
   opencode: 'opencode',
 };
+
+// ---- 読み取り専用コマンド ----
+// bash 経由の探索を許可するコマンド（restrict-root 系が allowedReadPaths 配下へのアクセスを許可する対象）
+// sed / awk は -i 等で書き込み得るため含めない
+export const READ_ONLY_COMMANDS = [
+  'ls',
+  'cat',
+  'grep',
+  'rg',
+  'head',
+  'tail',
+  'less',
+  'more',
+  'find',
+  'wc',
+  'sort',
+  'uniq',
+  'cut',
+  'diff',
+  'file',
+  'stat',
+  'du',
+  'tree',
+  'bat',
+  'nl',
+  'od',
+  'xxd',
+  'strings',
+  'which',
+  'type',
+  'realpath',
+  'readlink',
+];
