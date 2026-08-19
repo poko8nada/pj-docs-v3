@@ -2,7 +2,9 @@
 name: review
 description: Use when code, design, or documents need review and the result should be recorded in findings/review/.
 model: xiaomi/mimo-v2.5
-maxTurns: 32
+maxTurns: 64
+background: true
+showOutput: true
 tools:
   - read_file
   - read_directory

@@ -2,7 +2,9 @@
 name: stack-eval-finalize
 description: Use when finalizing stack-eval findings. Verifies and completes a candidate's comparison finding written by stack-eval-research, and appends the adoption runbook after adoption. One instance per candidate.
 model: xiaomi/mimo-v2.5
-maxTurns: 20
+maxTurns: 40
+background: true
+showOutput: true
 tools:
   - read_file
   - read_directory
