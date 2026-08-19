@@ -1,7 +1,7 @@
 ---
 name: feasibility
 description: Use when the technical feasibility of a proposed approach needs evaluation and the result should be recorded in findings/feasibility/.
-model: xiaomi/mimo-v2.5-pro
+model: xiaomi/mimo-v2.5
 maxTurns: 20
 tools:
   - read_file

@@ -1,7 +1,7 @@
 ---
 name: review
 description: Use when code, design, or documents need review and the result should be recorded in findings/review/.
-model: xiaomi/mimo-v2.5-pro
+model: xiaomi/mimo-v2.5
 maxTurns: 32
 tools:
   - read_file
