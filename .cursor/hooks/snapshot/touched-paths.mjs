@@ -1,3 +1,9 @@
+/*
+ * FEATURES: H-state
+ * PURPOSE: ログイベントからセッション内に触れたファイルパスを収集する (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
+
 const WRITE_TOOLS = new Set(['Write', 'StrReplace', 'ApplyPatch', 'EditNotebook']);
 
 /**

@@ -1,3 +1,9 @@
+/*
+ * FEATURES: H-transformer
+ * PURPOSE: プロジェクト内に存在するファイルパスのみをフィルタリングする (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
+
 import { access } from 'node:fs/promises';
 import { filterProjectPaths } from './allowed-paths.mjs';
 

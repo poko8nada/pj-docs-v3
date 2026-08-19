@@ -1,3 +1,9 @@
+/*
+ * FEATURES: H-chain
+ * PURPOSE: 入力読み取りと runtime への委譲を行うエントリポイント (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
+
 const failSafeResult = { decision: 'allow' };
 
 async function readInput() {

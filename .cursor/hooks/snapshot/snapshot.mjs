@@ -1,3 +1,9 @@
+/*
+ * FEATURES: H-state
+ * PURPOSE: ログからスナップショットを構築・読み込みするファサード (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
+
 import { readLogEvents } from './read.mjs';
 import { filterExistingProjectPaths } from '../lib/project-paths.mjs';
 import { collectTouchedPaths } from './touched-paths.mjs';

@@ -1,3 +1,9 @@
+/*
+ * FEATURES: H-gate
+ * PURPOSE: パスがプロジェクトルートまたは Cursor ホーム内かを判定する (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
+
 import { isAbsolute, relative, resolve } from 'node:path';
 
 export function isAllowedPath(filePath, projectRoot, cursorHome) {

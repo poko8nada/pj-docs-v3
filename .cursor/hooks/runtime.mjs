@@ -1,3 +1,9 @@
+/*
+ * FEATURES: H-chain
+ * PURPOSE: フック実行のオーケストレーションとスナップショット連携 (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
+
 import { homedir } from 'node:os';
 import { join } from 'node:path';
 import { logHook, pruneLogIfNeeded } from './log/log.mjs';

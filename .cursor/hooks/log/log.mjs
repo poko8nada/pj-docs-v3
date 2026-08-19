@@ -1,3 +1,9 @@
+/*
+ * FEATURES: H-reporter
+ * PURPOSE: ログイベントの書き込みとチェックポイント管理を行う (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
+
 import { appendFile, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { buildLogEvent } from './build-event.mjs';
 import { COUNT_PATH, LOG_DIRECTORY, LOG_PATH } from '../lib/paths.mjs';

@@ -1,3 +1,9 @@
+/*
+ * FEATURES: H-reporter
+ * PURPOSE: Hook 名と stdin フィールドからログイベントを組み立てる (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
+
 /**
  * Hook 名と公式 stdin フィールドに基づいてログイベントを組み立てる。
  * 存在しない値は推測せず省略する。

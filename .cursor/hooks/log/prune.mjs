@@ -1,3 +1,9 @@
+/*
+ * FEATURES: H-mutator
+ * PURPOSE: ログファイルの行数上限超過時に保持期間を過ぎた行を削除する (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
+
 import { readFile, writeFile } from 'node:fs/promises';
 import { COUNT_PATH, LOG_PATH } from '../lib/paths.mjs';
 

@@ -1,3 +1,9 @@
+/*
+ * FEATURES: H-handler
+ * PURPOSE: 子プロセスを実行し、終了コードと出力を返す (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
+
 import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 

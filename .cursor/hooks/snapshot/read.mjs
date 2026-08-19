@@ -1,3 +1,9 @@
+/*
+ * FEATURES: H-state
+ * PURPOSE: JSONL ログの末尾からイベントを読み取る (isDone: true)
+ * STATUS: sizeDrift=false, driftSuspected=false
+ */
+
 import { open } from 'node:fs/promises';
 import { LOG_PATH as DEFAULT_LOG_PATH } from '../lib/paths.mjs';
 
