@@ -48,18 +48,18 @@ Run `git diff` to obtain the changes to review. If the mission specifies staged 
 1. Run `git diff` to obtain the changes.
 2. Read the changed files (read / glob / grep / list) for context when needed.
 3. Verify library usage against official docs (context7) and external references (websearch / webfetch). Prefer context7 for library APIs; fetch source code only when context7 is insufficient.
-4. Verify every claim against a source. Do not rely on memory alone.
+4. Verify every claim against a source; rely on sources, not memory.
 
-Note: glob and grep do not traverse hidden directories (e.g. `.git`). When the target lives under a hidden directory, read the files by their explicit paths instead of relying on glob/grep discovery.
+Note: glob and grep skip hidden directories (e.g. `.git`). When the target lives under a hidden directory, read the files by their explicit paths instead of relying on glob/grep discovery.
 
 ## Output
 
 Create the file given in the mission's `Output` field (`findings/review/YYYY-MM-DD-<seq>.md`):
 
-- Create the directory if it does not exist.
+- Create the directory when it is missing.
 - Use the assigned file path as-is; the main agent has already allocated a unique `seq` per sub-agent.
-- The seq resets daily (the first file of a day is `YYYY-MM-DD-001.md`); never infer the seq from yesterday's files.
-- Never overwrite an existing file.
+- The seq resets daily (the first file of a day is `YYYY-MM-DD-001.md`); infer the seq from today's files only.
+- Write only to a new file.
 
 ## Frontmatter
 
@@ -70,7 +70,7 @@ date: YYYY-MM-DD
 ```
 
 - `date`: today's date.
-- Do not write `outcomes` or any other field. The main agent fills `outcomes` after discussing with the user.
+- Leave `outcomes` and all other fields to the main agent; it fills `outcomes` after discussing with the user.
 
 ## Body
 
@@ -78,7 +78,7 @@ date: YYYY-MM-DD
 - Content: bullet lists (`- `) only. No paragraphs, tables, code blocks, or quotes.
 - No inline formatting (bold, italic, links).
 - Write all content sentences in Japanese. Item labels, symbols, function names, IDs, and commands stay in English.
-- Use exactly the structure and labels below. Do not add or remove sections or bullets.
+- Use exactly the structure and labels below; keep the sections and bullets as given.
 
 ## R-what: Target
 

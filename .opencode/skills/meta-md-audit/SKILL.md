@@ -41,35 +41,36 @@ Mechanical checks cover:
   - Lists, headings, and inline code are included.
   - The frontmatter description is excluded (it is one-line by rule and capped at 1024 chars by the Description check).
   - A hit is a **structuring flag**: the line packs multiple concepts; restructure it (e.g. split a paragraph into an intro line plus bullets) instead of merely shortening text.
-  - Mid-paragraph breaks stay forbidden (Body check).
+  - Keep paragraphs on single lines (Body check).
 - **Tool-agnostic paths**: no tool-specific path prefixes in SKILL.md, references/\*.md, or agents/\*.md.
 - **Japanese extraction**: whitelist .md files only — root SKILL.md plus registered source directories (e.g. references/), recursive; agents are the single agents/\*.md file. Notes:
   - Whitelist `MD_SOURCE_DIRS` and skip list `SKIP_DIRS` live in scripts/audit.mjs.
-  - The script only extracts; the agent judges (Step 2).
-- **Unregistered .md directories**: warns when .md exists outside the whitelist, so future source directories are never silently missed. SKILL.md only.
+- **Negative expressions**: extracts lines with English negative directives (prohibitions and instructions phrased in the negative) outside code blocks and HTML comments. The pattern list lives in scripts/lib/md-checks.mjs.
+- **Unregistered .md directories**: warns when .md exists outside the whitelist, surfacing future source directories. SKILL.md only.
 - **Security patterns**: destructive commands, sensitive paths, prompt injection.
 
 ## Step 2 — Content check (agent)
 
-After the mechanical check passes, review each target's content and present findings in chat. Do not re-run the script. Review scope:
+After the mechanical check passes, review each target's content and present findings in chat. Run the script once in Step 1 and rely on its output. The script extracts mechanically; the agent judges content. Review scope:
 
 - For skills: review the SKILL.md **and** the skill's `references/*.md` files.
 - For agents: review the single agents/\*.md file.
-- The script only checks paths inside references, not their content.
+- For references, the script checks paths only; the agent reviews the content.
 
 - Description: does it convey what the skill/agent does and when to use it? Is it third person?
 - Body: are the steps clear and numbered? Are there concrete examples?
 - Gotchas: does the skill/agent mention failure patterns or pitfalls?
 - Structure: is detail split into reference/ files when the body approaches 500 lines? Are references one level deep?
-- Structuring: for every `md-line-length` hit reported by the script, propose a restructuring (intro line plus bullets, one concept per line) rather than text shortening. Mid-paragraph breaks stay forbidden.
+- Structuring: for every `md-line-length` hit reported by the script, propose a restructuring (intro line plus bullets, one concept per line) rather than text shortening.
+- Negative expressions: for every `md-negative` hit reported by the script, delete it or rephrase it positively, keeping the meaning intact (e.g. turn a prohibition into the action to take).
+- Redundancy: does the same expression or statement appear more than once in the same md? Consolidate each into a single sentence placed in the most appropriate location.
 - Language:
   - Is the terminology consistent?
   - Is everything written in English? Agents are agent-facing: the output rules must be explicit.
   - If the output format is intended for users, is it explicitly stated that it should be written in Japanese?
   - For every `md-japanese` hit reported by the script, check manually whether the file explicitly states that its user-facing output is written in Japanese:
     - Allowed when the statement exists; otherwise propose English conversion in the findings.
-    - The script only extracts, it does not judge.
-- Independence: does the skill avoid external references? External things are allowed only as procedure outputs (e.g., products/ snapshots). Rules:
+- Independence: is the skill self-contained? External things are allowed only as procedure outputs (e.g., products/ snapshots). Rules:
   - Skill-specific artifacts belong inside the skill.
   - If multiple skills share something, consider separating responsibility.
 

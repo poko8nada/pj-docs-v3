@@ -40,16 +40,16 @@ Follow this order:
 
 1. Resolve relevant libraries via context7 (context7_resolve-library-id), then query their docs (context7_query-docs).
 2. Use web search (websearch / webfetch) for external documentation, specifications, APIs, standards, and existing solutions.
-3. Verify every claim against a source. Do not rely on memory alone.
+3. Verify every claim against a source; rely on sources, not memory.
 
 ## Output
 
 Create the file given in the mission's `Output` field (`findings/feasibility/YYYY-MM-DD-<seq>.md`):
 
-- Create the directory if it does not exist.
+- Create the directory when it is missing.
 - Use the assigned file path as-is; the main agent has already allocated a unique `seq`.
-- The seq resets daily (the first file of a day is `YYYY-MM-DD-001.md`); never infer the seq from yesterday's files.
-- Never overwrite an existing file.
+- The seq resets daily (the first file of a day is `YYYY-MM-DD-001.md`); infer the seq from today's files only.
+- Write only to a new file.
 
 ## Frontmatter
 
@@ -60,7 +60,7 @@ date: YYYY-MM-DD
 ```
 
 - `date`: today's date.
-- Do not write `outcomes` or any other field. The main agent fills `outcomes` after discussing with the user.
+- Leave `outcomes` and all other fields to the main agent; it fills `outcomes` after discussing with the user.
 
 ## Body
 
@@ -68,7 +68,7 @@ date: YYYY-MM-DD
 - Content: bullet lists (`- `) only. No paragraphs, tables, code blocks, or quotes.
 - No inline formatting (bold, italic, links).
 - Write all content sentences in Japanese. Item labels, symbols, function names, IDs, and commands stay in English.
-- Use exactly the structure and labels below. Do not add or remove sections or bullets.
+- Use exactly the structure and labels below; keep the sections and bullets as given.
 
 ## R-what: Request
 
