@@ -267,6 +267,64 @@ export const SECURITY_PATTERNS = [
   },
 ];
 
+// ---- 否定表現の抽出（機械抽出のみ。削除/肯定形への言い換えの判定は Step 2 の手動チェック） ----
+
+// 否定表現（〜しない。型の指示）の検出パターン（英語のみ）
+// 方針: 「〜しない」という否定指示は削除するか肯定形に言い換える。
+// スクリプトは抽出のみ行い、削除/言い換えの判断はエージェントに委ねる。
+export const NEGATIVE_PATTERNS = [
+  /\bdo not\b/i,
+  /\bdoes not\b/i,
+  /\bdon't\b/i,
+  /\bnever\b/i,
+  /\bmust not\b/i,
+  /\bmustn't\b/i,
+  /\bshould not\b/i,
+  /\bshouldn't\b/i,
+  /\bforbidden\b/i,
+  /\bprohibited\b/i,
+  /\bavoid\b/i,
+];
+
+// 否定表現を含む行を抽出する（コードブロック・HTML コメントは除外）
+export function findNegatives(text, label) {
+  const found = [];
+  const lines = text.split(/\r?\n/);
+  let inCode = false;
+  let inComment = false;
+  for (let i = 0; i < lines.length; i++) {
+    const trimmed = lines[i].trim();
+
+    // コードフェンスのトグル
+    if (!inComment && trimmed.startsWith('```')) {
+      inCode = !inCode;
+      continue;
+    }
+    if (inCode) {
+      continue;
+    }
+
+    // HTML コメントの開始 / 終了
+    if (inComment) {
+      if (trimmed.includes('-->')) {
+        inComment = false;
+      }
+      continue;
+    }
+    if (trimmed.startsWith('<!--')) {
+      if (!trimmed.includes('-->')) {
+        inComment = true;
+      }
+      continue;
+    }
+
+    if (NEGATIVE_PATTERNS.some((re) => re.test(lines[i]))) {
+      found.push(`${label} ${i + 1}行目: ${lines[i].trim()}`);
+    }
+  }
+  return found;
+}
+
 // ---- 日本語抽出・ソース md 列挙（機械抽出のみ。明記の有無の判定は Step 2 の手動チェック） ----
 
 // スキル内の .md をホワイトリスト方式で列挙する

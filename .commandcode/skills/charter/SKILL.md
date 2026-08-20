@@ -9,7 +9,7 @@ when_to_use: 'チャーター, charterし, 方針を決め, 方針決め, 方針
 The entry point for turning an aligned discussion into a concrete, agreed file-level proposal. Key points:
 
 - The discussion in chat is the means; the header comment is the deliverable.
-- charter writes header comments only — it never touches implementation code.
+- charter writes header comments only; it leaves implementation code to the session skill.
 
 ## Language
 
@@ -22,8 +22,8 @@ The entry point for turning an aligned discussion into a concrete, agreed file-l
 
 - **Meta code** (H-,M-,S-): hooks, plugins, scripts. No product definition involved; use the pattern table.
 - **Product code**: the future product defined in products/. Identify the feature (`F-<domain>.<sub>`) the change concerns, per `references/features-guide.md`.
-- **Product definition missing or incomplete** → do not propose. Hand the discussion to the product skill and resume once it is complete. Do not invent feature IDs.
-- The change maps to no product section → do not propose. Hand it to the **product skill** to add the section, then resume.
+- **Product definition missing or incomplete** → propose only once it is complete. Hand the discussion to the product skill and resume when it returns. Hold the proposal until the feature ID exists.
+- The change maps to no product section → propose only after the **product skill** adds the section, then resume.
 
 ### 2. Propose (refactor-first)
 
@@ -37,7 +37,7 @@ Compile a proposal of which files to create or change, per `references/proposal-
 
 ### 3. Discuss
 
-Discuss the proposal until the user agrees. Never record before agreement.
+Discuss the proposal until the user agrees. Record only after agreement.
 
 ### 4. Record the header
 
@@ -47,8 +47,8 @@ On agreement, for each proposed file:
    - `FEATURES`: pattern IDs (H-,M-,S-) for meta code; feature IDs (F-\*) for product code.
    - `PURPOSE`: the file's role in one line, with `(isDone: false)` — the purpose is not yet implemented.
    - `STATUS`: drift flags, all false initially.
-2. If a header already exists, propose the rewrite. Never add a second header.
-3. If the change implies a products/ snapshot update, do not record — hand the discussion to the product skill instead. Do not touch the code.
+2. If a header already exists, propose the rewrite. Keep a single header per file.
+3. If the change implies a products/ snapshot update, hand the discussion to the product skill and record only after it returns. Leave the code untouched.
 
 ### 5. Hand off
 
@@ -59,11 +59,11 @@ On agreement, for each proposed file:
 
 - Headers apply to real code files only: `.ts/.tsx/.mts/.cts/.js/.jsx/.mjs/.cjs`.
 - Excluded: test files (`*.test.*`, `*.spec.*`), markdown, config files that cannot carry comments.
-- Test files never carry a header, but they are listed in the proposal as file entries (Header: none) so the need for tests is explicit.
+- Test files carry no header, but they are listed in the proposal as file entries (Header: none) so the need for tests is explicit.
 
 ## Limits
 
-- Do not record before the user agrees.
-- Do not touch implementation code.
+- Record only after the user agrees.
+- Leave implementation code to the session skill.
 - Design decisions live in the only product definition.
-- Do not propose the session plan.
+- Leave the session plan to the session skill.

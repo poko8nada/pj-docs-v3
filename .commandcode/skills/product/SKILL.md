@@ -15,7 +15,7 @@ The product definition lives in `products/` as append-only snapshots: what the p
 
 - The user owns every decision recorded in the product definition.
 - Agent ideas, interpretations, and recommendations are proposals until the user explicitly agrees.
-- Never write content without explicit user agreement.
+- Write content only after explicit user agreement.
 - When agreement is unclear, leave the section unresolved and return to discussion.
 
 ## Language
@@ -78,7 +78,7 @@ Goal ←→ Discover → Build
 
 ## Limits
 
-- Do not write unresolved proposals as agreed decisions.
-- Do not edit code or notes from this skill.
-- Do not silently change a section the user has not agreed to.
-- Do not edit an existing snapshot; append a new one.
+- Write only agreed decisions as decisions; keep unresolved proposals as proposals.
+- Leave code and notes to their owning skills.
+- Change a section only after the user agrees.
+- Append a new snapshot; leave existing snapshots unchanged.

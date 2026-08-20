@@ -11,6 +11,7 @@ import {
   findJapanese,
   findLongLines,
   findMidParagraphBreaks,
+  findNegatives,
   findToolSpecificPaths,
   MAX_LINE_LENGTH,
   SECURITY_PATTERNS,
@@ -204,13 +205,15 @@ export function checkRefToolPaths(skillDir, findings) {
   }
 }
 
-// 日本語抽出・行長チェック（skill は whitelist 対象 md、agent は単一の .md）
+// 日本語抽出・否定表現抽出・行長チェック（skill は whitelist 対象 md、agent は単一の .md）
 export function checkSources(sources, findings) {
   const jaHits = [];
+  const negHits = [];
   const longLines = [];
   for (const { rel, path } of sources) {
     const srcText = readFileSync(path, 'utf8');
     jaHits.push(...findJapanese(srcText, rel));
+    negHits.push(...findNegatives(srcText, rel));
     longLines.push(...findLongLines(bodyOf(srcText), MAX_LINE_LENGTH, rel));
   }
   if (jaHits.length) {
@@ -219,6 +222,14 @@ export function checkSources(sources, findings) {
       severity: 'warning',
       label: 'md に日本語が含まれない（ユーザー向け明記の有無は Step 2 で手動判定）',
       suggestion: `検出: ${jaHits.slice(0, 5).join('; ')}${jaHits.length > 5 ? ` ほか ${jaHits.length - 5} 件` : ''}`,
+    });
+  }
+  if (negHits.length) {
+    findings.push({
+      id: 'md-negative',
+      severity: 'warning',
+      label: '否定表現（〜しない）を削除するか肯定形に言い換える（Step 2 で手動判定）',
+      suggestion: `検出: ${negHits.slice(0, 5).join('; ')}${negHits.length > 5 ? ` ほか ${negHits.length - 5} 件` : ''}`,
     });
   }
   if (longLines.length) {

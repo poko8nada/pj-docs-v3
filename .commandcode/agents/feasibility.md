@@ -38,16 +38,15 @@ Follow this order:
 
 1. Resolve relevant libraries via context7 (mcp__context7__resolve-library-id), then query their docs (mcp__context7__query-docs).
 2. Use web search (web_search / web_fetch) for external documentation, specifications, APIs, standards, and existing solutions.
-3. Verify every claim against a source. Do not rely on memory alone.
+3. Verify every claim against a source; rely on sources, not memory.
 
 ## Output
 
 Create the file given in the mission's `Output` field (`findings/feasibility/YYYY-MM-DD-<seq>.md`):
 
-- Create the directory if it does not exist.
+- Create the directory when it is missing.
 - Use the assigned file path as-is; the main agent has already allocated a unique `seq`.
-- The seq resets daily (the first file of a day is `YYYY-MM-DD-001.md`); never infer the seq from yesterday's files.
-- Never overwrite an existing file.
+- Write only to a new file.
 
 ## Frontmatter
 
@@ -58,7 +57,7 @@ date: YYYY-MM-DD
 ```
 
 - `date`: today's date.
-- Do not write `outcomes` or any other field. The main agent fills `outcomes` after discussing with the user.
+- Leave `outcomes` and all other fields to the main agent; it fills `outcomes` after discussing with the user.
 
 ## Body
 
@@ -66,7 +65,13 @@ date: YYYY-MM-DD
 - Content: bullet lists (`- `) only. No paragraphs, tables, code blocks, or quotes.
 - No inline formatting (bold, italic, links).
 - Write all content sentences in Japanese. Item labels, symbols, function names, IDs, and commands stay in English.
-- Use exactly the structure and labels below. Do not add or remove sections or bullets.
+- Use exactly the structure and labels below; keep the sections and bullets as given.
+
+## Writing quality
+
+- Write in natural Japanese. Keep English only for identifiers, file paths, commands, and technical terms without a natural Japanese equivalent.
+- One concept per bullet; keep each bullet and field to one short sentence unless the template specifies multiple bullets.
+- State each fact once; skip filler verdicts (e.g. ending every bullet with "correct").
 
 ## R-what: Request
 
@@ -79,8 +84,8 @@ date: YYYY-MM-DD
 - ID: <F1, F2, ...>
 - Severity: <high / medium / low>
 - Finding: <finding>
-- Impact: <impact>
-- Risk: <risk>
+- Impact: <what happens if ignored>
+- Risk: <uncertainty or failure likelihood>
 - Recommendation: <recommendation>
 - Source: <source URL>
 

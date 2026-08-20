@@ -22,7 +22,7 @@ Reviews code, design, or documents and records the result as an append-only find
 3. For each finalized area or sub-area, launch **one or more** review sub-agents **in the background.**
    - Before launching, assign each sub-agent a unique output file: list `findings/review/` and allocate `YYYY-MM-DD-<seq>.md` in order (001, 002, ...).
    - The seq resets daily: the first finding of today is `YYYY-MM-DD-001.md` regardless of yesterday's numbers.
-   - When doing so, provide a mission prompt containing only the following four fields (do not pass the diff itself, as the sub-agent will retrieve the changes using `git diff`):
+   - When doing so, provide a mission prompt containing only the following four fields; the sub-agent retrieves the diff itself via `git diff`:
      - Target: <what to review>
      - Background: <why this review>
      - Constraints: <review scope and assumptions>
@@ -49,6 +49,6 @@ Reviews code, design, or documents and records the result as an append-only find
 
 ## Rules
 
-- Do not modify the findings content; only fill `outcomes`.
-- The document format is owned by the sub-agent. Do not get involved in it.
+- Fill only `outcomes`; leave the rest of the findings content unchanged.
+- Leave the document format to the sub-agent.
 - If a finding is adopted, propose next steps (e.g., product update, charter the change).

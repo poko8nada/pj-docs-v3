@@ -17,7 +17,7 @@ Proposes what to do in the current session. The session plan is a different axis
 
 1. Read the charted headers (isDone: false) and the latest products/ snapshot. Meta headers are implemented directly, not sliced.
 2. Read the current code to know what exists.
-3. If charted headers remain undecided (isDone: false), tell the user to run the charter skill first; do not charter yourself.
+3. If charted headers remain undecided (isDone: false), tell the user to run the charter skill first; let the charter skill handle it.
 4. Derive slices from the charted headers and propose them using `references/slice-template.md`.
 5. Discuss with the user until the slice is agreed.
 
@@ -37,6 +37,6 @@ Proposes what to do in the current session. The session plan is a different axis
 
 ## Limits
 
-- Do not implement before the user agrees.
-- Do not write or rewrite header comments; that is the charter skill's job.
-- Do not decide whether tests are needed; that was decided during chartering.
+- Implement only after the user agrees.
+- Leave header comments to the charter skill.
+- Rely on the chartering decision for whether tests are needed.

@@ -45,6 +45,6 @@ Optional after Usage: Configuration / API Reference / Table of Contents / Conten
 
 ## Limits
 
-- Do not put Concept/Goals, Stack rationale, Architecture, Roadmap, or harness internals in README.
-- Do not expand into product/harness redesign under README work.
+- Keep Concept/Goals, Stack rationale, Architecture, Roadmap, and harness internals out of README.
+- Keep README work scoped to the README; leave product/harness redesign to their owning skills.
 - Mode B: remove internal blocks the user agreed to move.

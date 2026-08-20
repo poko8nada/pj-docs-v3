@@ -4,7 +4,7 @@
 
 - A change belongs to a feature if it implements or alters that capability. Map it to the feature ID from the latest products/ snapshot.
 - A change that touches multiple features is a split-chartering sign: prefer one proposal per feature.
-- **Nothing matches** → do not invent an ID. Propose adding the feature to the product definition (product skill) and hold the proposal until it exists.
+- **Nothing matches** → propose adding the feature to the product definition (product skill) and hold the proposal until the ID exists.
 
 ## Granularity judgment (three questions)
 

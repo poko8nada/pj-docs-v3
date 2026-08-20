@@ -16,16 +16,16 @@ Evaluates stack candidates (frameworks and config-bearing libraries) and records
 
 - One file per candidate: comparison + decision; the chosen candidate also gets an adoption runbook.
 - The finding file is the single handoff artifact between phases; there is no intermediate research document.
-- No product awareness: the input contract is the only context; never read `products/`.
+- No product awareness: the input contract is the only context; read only the input contract.
 - The main agent executes the runbook and records the decision in the product definition via the product skill.
 - Two agent definitions serve one candidate: `stack-eval-research` (Phase 1) and `stack-eval-finalize` (Phase 2 and 3). Phases are missions, not definitions.
-- Integration at the project root is the default: the adopted candidate is integrated into the existing project root, never nested as a sub-project (e.g. `apps/web`).
+- Integration at the project root is the default: the adopted candidate is integrated into the existing project root, not nested as a sub-project (e.g. `apps/web`).
 - The temp scaffold exists only for diff extraction and is removed after the runbook.
 - Layer separation (e.g. frontend in `src/`, backend in `worker/`) is expressed as folders inside the single project; it is not a reason to adopt a monorepo.
 
 ## Monorepo
 
-- By default, do not adopt a monorepo / workspace structure: package-level separation (per-package package.json / tsconfig / node_modules) is usually over-engineering for a single product.
+- By default, adopt package-level separation (per-package package.json / tsconfig / node_modules) only when justified; it is usually over-engineering for a single product.
 - A monorepo is justified only when at least one concrete benefit applies:
   - frontend and backend have clearly separate lifecycles (independent deploys / independent versioning)
   - independent scaling or resource isolation is required
@@ -92,13 +92,13 @@ Choose by the toolchain's default: prefer the pattern that requires the least re
 
 ## Rules
 
-- Do not modify the comparison content; only fill `outcomes` (or take over per the fallback section).
-- The document format and the adoption conventions are owned by the sub-agents. Do not get involved in them except in the fallback.
-- Do not read or reference `products/`; the input contract is the only context.
-- Do not execute the runbook yourself; execution is the main agent's step after the user agrees.
+- Fill only `outcomes` (or take over per the fallback section); leave the rest of the comparison content unchanged.
+- Leave the document format and the adoption conventions to the sub-agents except in the fallback.
+- Read only the input contract; leave `products/` to the product skill.
+- Execute the runbook only after the user agrees; execution is the main agent's step.
 
 ## Limits
 
 - Not for pure dependencies without a config surface (plain `pnpm add`).
 - Not for product definition decisions; the main agent records them via the product skill.
-- One candidate per agent instance; never bundle multiple candidates into one agent.
+- Run one candidate per agent instance.

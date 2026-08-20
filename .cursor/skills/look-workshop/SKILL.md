@@ -18,7 +18,7 @@ Steps 2–3 may loop; mid-run build OK without reset.
 
 - `node scripts/dev.mjs` — Vite + cmux
 - `node scripts/build.mjs` — singlefile → `findings/look-workshop/<slug>.html` (+ assets merge)
-- `node scripts/reset.mjs` — restore workshop; does not delete findings
+- `node scripts/reset.mjs` — restore workshop; keeps findings intact
 
 ## Steps
 
@@ -65,7 +65,7 @@ Topic / Path (`.html`) / Why / Summary / Axes touched.
 ## Limits
 
 - Use `dev.mjs`, not root `pnpm dev`.
-- Do not invent a finished look from an empty workshop.
-- Do not treat `comments.json` as durable design docs.
-- Do not overwrite slug without intent; do not ship workshop as product tree.
-- Do not edit issues.
+- Derive the finished look from the workshop content, not from an empty workshop.
+- Treat `comments.json` as transient workshop notes, not durable design docs.
+- Overwrite the slug only with intent; ship the workshop only as a workshop artifact.
+- Leave issues to the issue tracker.

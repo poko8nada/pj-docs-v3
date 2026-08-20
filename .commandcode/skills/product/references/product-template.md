@@ -79,4 +79,4 @@ Match the heading to the type (the ID stays `B-deploy`): web app / API → Deplo
 - <what it provides, in one line>
 - <why: 1-3 bullets>
 
-Common units are optional: include them only when multiple features share the unit. Features depend on Common; Common never depends on features.
+Common units are optional: include them only when multiple features share the unit. Features depend on Common; Common is independent of features.

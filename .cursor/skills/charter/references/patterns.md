@@ -10,17 +10,17 @@ The registry of reusable roles for meta code. Rules:
 ## H-\* — Harness and hook code
 
 - **H-chain — coordinator**: Coordinates a sequence of processing units. Holds no judgment or transformation logic of its own; it only passes inputs and outputs along. Dependency is one-way: chain → units.
-- **H-handler — single-responsibility unit**: A processing unit with a single responsibility. Receives a hook/event context and returns a response or log. Does not handle multiple hook kinds.
-- **H-gate — condition gate**: Evaluates conditions and returns allow/deny only. Never mutates files or state (zero side effects).
-- **H-mutator — rewriter**: Rewrites files or state. Does not judge; judgment and mutation are separated responsibilities.
+- **H-handler — single-responsibility unit**: A processing unit with a single responsibility. Receives a hook/event context and returns a response or log. Handles a single hook kind.
+- **H-gate — condition gate**: Evaluates conditions and returns allow/deny only. Mutates nothing (zero side effects).
+- **H-mutator — rewriter**: Rewrites files or state. Judges nothing; judgment and mutation are separated responsibilities.
 - **H-verifier — post-completion verifier**: Runs verification after work completes and reports the result. Scoped to a single concern per instance.
-- **H-state — state store**: Persists and restores session state. Does not judge or mutate beyond its own store.
+- **H-state — state store**: Persists and restores session state. Judges and mutates only within its own store.
 - **H-reporter — recorder/notifier**: Records or reports results and changes. Observation only; zero side effects.
-- **H-transformer — in-memory converter**: Converts an input to another form in memory and passes it on. Never writes files (boundary vs H-mutator).
+- **H-transformer — in-memory converter**: Converts an input to another form in memory and passes it on. Writes no files (boundary vs H-mutator).
 
 ## M-\* — Meta scripts and tools
 
-- **M-validate — static validation**: Static validation. Read-only; never modifies its inputs.
+- **M-validate — static validation**: Static validation. Read-only; leaves its inputs unchanged.
 - **M-transform — conversion/generation**: Converts or generates output files from inputs without modifying the inputs in place.
 - **M-report — result presentation**: Presents detected results for humans. No side effects beyond producing output.
 - **M-sync — synchronization**: Aligns state between two targets. Exactly one target is the source of truth.

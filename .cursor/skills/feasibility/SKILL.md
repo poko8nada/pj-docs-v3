@@ -52,6 +52,6 @@ Evaluates the technical feasibility of a proposed approach and records the resul
 
 ## Rules
 
-- Do not modify the findings content; only fill `outcomes`.
-- The document format is owned by the sub-agent. Do not get involved in it.
+- Fill only `outcomes`; leave the rest of the findings content unchanged.
+- Leave the document format to the sub-agent.
 - If the finding is adopted, propose next steps (e.g., product update via the product skill, charter the change via the charter skill).

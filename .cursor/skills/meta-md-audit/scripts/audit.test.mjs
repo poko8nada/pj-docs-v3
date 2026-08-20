@@ -1,6 +1,6 @@
-// findMidParagraphBreaks / findLongLines の md 構文カバレッジ検証用 vitest テスト
+// findMidParagraphBreaks / findLongLines / findNegatives の md 構文カバレッジ検証用 vitest テスト
 import { describe, expect, it } from 'vitest';
-import { findLongLines, findMidParagraphBreaks } from './lib/md-checks.mjs';
+import { findLongLines, findMidParagraphBreaks, findNegatives } from './lib/md-checks.mjs';
 
 describe('findMidParagraphBreaks', () => {
   const body = [
@@ -89,5 +89,46 @@ describe('findLongLines', () => {
     const body = ['short line', ok].join('\n');
 
     expect(findLongLines(body, 200, 'test')).toEqual([]);
+  });
+});
+
+describe('findNegatives', () => {
+  it('flags English negative expressions', () => {
+    const body = [
+      'Do not re-run the script.',
+      'The script never judges content.',
+      'Mid-paragraph breaks stay forbidden.',
+      'Avoid external references.',
+      'The script must not modify inputs.',
+      'Run the script once.',
+      'The script extracts lines only.',
+    ].join('\n');
+
+    expect(findNegatives(body, 'test')).toHaveLength(5);
+  });
+
+  it('flags nothing on positive phrasing', () => {
+    const body = [
+      'Run the script once and rely on its output.',
+      'Keep paragraphs on single lines.',
+      'The script extracts lines only.',
+      'これは使わない。',
+    ].join('\n');
+
+    expect(findNegatives(body, 'test')).toEqual([]);
+  });
+
+  it('excludes code blocks and HTML comments', () => {
+    const body = [
+      '```bash',
+      'if [ ! -f file ]; then echo "do not run"; fi',
+      '```',
+      '',
+      '<!-- never touch this comment -->',
+      '',
+      'Real prose with do not in it.',
+    ].join('\n');
+
+    expect(findNegatives(body, 'test')).toHaveLength(1);
   });
 });

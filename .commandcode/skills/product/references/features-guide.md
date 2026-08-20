@@ -3,8 +3,8 @@
 A feature is a capability unit that can be implemented and verified independently. Naming rules:
 
 - Feature names use the `F-<domain>.<sub>` form (e.g., `F-auth.login`).
-- Do not use sequential numbers (F-01): functional names keep existing IDs stable across additions, reordering, and splits.
-- Feature IDs referenced from code headers are leaf features and always carry the dotted form. Non-dotted names may appear only as grouping domains in the tree (e.g. `F-note` below); they are never referenced from headers.
+- Use functional names, not sequential numbers (F-01): functional names keep existing IDs stable across additions, reordering, and splits.
+- Feature IDs referenced from code headers are leaf features and always carry the dotted form. Non-dotted names may appear only as grouping domains in the tree (e.g. `F-note` below); headers reference dotted leaf IDs only.
 - Renames and removals are recorded in a snapshot via `removed` plus `changed` (see products/README.md).
 
 ## Two unit kinds
@@ -14,7 +14,7 @@ The product definition has two kinds of units, distinguished by dependency direc
 - **Features (`F-*`)** — user-visible capabilities. The depending side: they use Common units.
 - **Common (`C-*`)** — shared units that multiple features depend on but that are not capabilities on their own: shared components, the shared data model, and cross-cutting concerns (auth, logging, observability, ...).
 
-Dependency is one-way: features depend on Common; Common never depends on features. Common units may depend on other Common units, but the graph must stay acyclic.
+Dependency is one-way: features depend on Common; Common is independent of features. Common units may depend on other Common units, but the graph must stay acyclic.
 
 ## Granularity judgment (three questions)
 
@@ -25,9 +25,9 @@ Dependency is one-way: features depend on Common; Common never depends on featur
 ## Feature tree rules
 
 1. **Two levels by default** — `F-<domain>.<sub>`. Three levels (`F-a.b.c`) is a sign to split.
-2. **A domain is a user-facing area of concern** — notes, search, sync. Do not cut domains by implementation layer (UI / data).
+2. **A domain is a user-facing area of concern** — notes, search, sync. Cut domains by user-facing area, not implementation layer (UI / data).
 3. **Only leaf features are implementation units** — headers reference dotted leaves only. Non-dotted names are tree grouping.
-4. **Shared logic goes to Common, not a parent feature** — do not add "common processing" to a parent feature; shared units belong in `C-*`.
+4. **Shared logic goes to Common, not a parent feature** — put shared units in `C-*`, not a parent feature.
 5. **Cross-domain dependencies are recorded explicitly** — when a feature depends on another domain's feature, note the dependency.
 
 ## Example (notes app)
