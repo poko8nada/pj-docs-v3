@@ -24,7 +24,13 @@ const DEFAULT_PRODUCTS_DIR = path.resolve(
   PRODUCTS_DIR,
 );
 const SECTION_ID = /^(G|D|B|F|C)-[A-Za-z0-9.]+$/;
+const LAYER_ID = /^(Goal|Discover|Build)$/;
 const FILE_NAME = /^(\d{4}-\d{2}-\d{2})-(\d{3})\.md$/;
+
+/** セクションIDとして有効か（レイヤー見出しまたはプレフィックス付きID） */
+function isValidSectionId(id) {
+  return SECTION_ID.test(id) || LAYER_ID.test(id);
+}
 
 /** @returns {string[]} ソート済みのスナップショットファイル名 */
 export function listSnapshots(productsDir = DEFAULT_PRODUCTS_DIR) {
@@ -76,12 +82,19 @@ export function parseSections(body) {
   let id = null;
   let lines = [];
   for (const line of body.split('\n')) {
-    const h = line.match(/^## ([^:]+):/);
-    if (h) {
+    const layer = line.match(/^## ([^:]+)(?::|$)/);
+    const child = line.match(/^### ([^:]+)(?::|$)/);
+    if (layer) {
       if (id) {
         sections[id] = lines;
       }
-      id = h[1].trim();
+      id = null;
+      lines = [];
+    } else if (child) {
+      if (id) {
+        sections[id] = lines;
+      }
+      id = child[1].trim();
       lines = [];
     } else if (id) {
       lines.push(line);
@@ -120,14 +133,14 @@ export function validate(file, productsDir = DEFAULT_PRODUCTS_DIR) {
 
   const changed = Array.isArray(fm.changed) ? fm.changed : [];
   for (const id of changed) {
-    if (!SECTION_ID.test(id)) {
+    if (!isValidSectionId(id)) {
       errors.push(`${file}: invalid changed ID "${id}"`);
     }
   }
 
   const removed = Array.isArray(fm.removed) ? fm.removed : [];
   for (const id of removed) {
-    if (!SECTION_ID.test(id)) {
+    if (!isValidSectionId(id)) {
       errors.push(`${file}: invalid removed ID "${id}"`);
     }
   }
@@ -135,11 +148,11 @@ export function validate(file, productsDir = DEFAULT_PRODUCTS_DIR) {
   const body = text.replace(/^---\n[\s\S]*?\n---\n/, '');
   const sections = parseSections(body);
   for (const [id, lines] of Object.entries(sections)) {
-    if (!SECTION_ID.test(id)) {
+    if (!isValidSectionId(id)) {
       errors.push(`${file}: invalid section heading ID "${id}"`);
     }
     for (const line of lines) {
-      if (line.trim() !== '' && !line.startsWith('- ')) {
+      if (line.trim() !== '' && !line.startsWith('- ') && !line.startsWith('### ')) {
         errors.push(`${file}: non-bullet content in section ${id}: "${line.trim()}"`);
       }
     }

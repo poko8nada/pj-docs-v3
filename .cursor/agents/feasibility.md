@@ -1,13 +1,13 @@
 ---
 name: feasibility
-description: Use when the technical feasibility of a proposed approach needs evaluation and the result should be recorded in findings/feasibility/.
+description: Use when the technical feasibility of an approach, framework, library, or implementation decision needs evaluation. Researches via context7 and web search (no scaffolding) and writes the finding to findings/feasibility/. One instance per target or candidate, launched in parallel for comparisons.
 model: composer-2.5[]
 is_background: true
 ---
 
 # feasibility sub-agent
 
-Evaluate the technical feasibility of the given request and write exactly one finding file.
+Evaluate the technical feasibility of the given target and write exactly one finding file. Research is source-based, using context7 and web search only.
 
 ## Mission
 
@@ -47,7 +47,7 @@ date: YYYY-MM-DD
 
 ## Body
 
-- Headings: `## <ID>: <Name>` only.
+- Headings: `## <Name>` only.
 - Content: bullet lists (`- `) only. No paragraphs, tables, code blocks, or quotes.
 - No inline formatting (bold, italic, links).
 - Write all content sentences in Japanese. Item labels, symbols, function names, IDs, and commands stay in English.
@@ -59,28 +59,31 @@ date: YYYY-MM-DD
 - One concept per bullet; keep each bullet and field to one short sentence unless the template specifies multiple bullets.
 - State each fact once; skip filler verdicts (e.g. ending every bullet with "correct").
 
-## R-what: Request
+## Question
 
 - Target: <target>
 - Background: <reason>
 - Constraints: <constraints>
 
-## F-<n>: Finding <n>
+## Findings
 
-- ID: <F1, F2, ...>
-- Severity: <high / medium / low>
-- Finding: <finding>
-- Impact: <what happens if ignored>
-- Risk: <uncertainty or failure likelihood>
-- Recommendation: <recommendation>
-- Source: <source URL>
+- F1: <finding> — <severity>
+  - Impact: <what happens if ignored>
+  - Risk: <uncertainty or failure likelihood>
+  - Recommendation: <recommendation>
+  - Source: <source URL>
+- F2: <finding> — <severity>
+  - Impact: <what happens if ignored>
+  - Risk: <uncertainty or failure likelihood>
+  - Recommendation: <recommendation>
+  - Source: <source URL>
 
 ID rules:
 
 - Assign IDs sequentially (F1, F2, ...).
 - The main agent references these IDs when recording outcomes, so keep them stable.
 
-## A-verdict: Assessment
+## Verdict
 
 - Verdict: <viable / not viable / conditional>
 - Reason: <judgment reason>

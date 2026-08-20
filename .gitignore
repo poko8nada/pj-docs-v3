@@ -37,5 +37,5 @@ lerna-debug.log*
 .typecheck-staged-*.json
 .qg-tsconfig-*.json
 
-# stack-eval scaffolds
-.stack-eval/
+# stack-adopt scaffolds
+.stack-adopt/

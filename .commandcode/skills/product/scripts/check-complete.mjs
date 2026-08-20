@@ -23,6 +23,9 @@ const PRODUCTS_DIR_ABS = path.resolve(
 );
 const FILE_NAME = /^(\d{4}-\d{2}-\d{2})-(\d{3})\.md$/;
 const REQUIRED_IDS = [
+  'Goal',
+  'Discover',
+  'Build',
   'G-what',
   'G-outcome',
   'G-nongoal',
@@ -47,11 +50,11 @@ function listSnapshots() {
     .toSorted();
 }
 
-/** @param {string} text @returns {string[]} 本文中のセクションID */
+/** @param {string} text @returns {string[]} 本文中のセクションID（子見出しのみ） */
 function sectionIds(text) {
   const ids = [];
   for (const line of text.split('\n')) {
-    const h = line.match(/^## ([^:]+):/);
+    const h = line.match(/^### ([^:]+)(?::|$)/);
     if (h) {
       ids.push(h[1].trim());
     }
@@ -62,13 +65,13 @@ function sectionIds(text) {
 /** @param {string} text @param {string} id @returns {string} セクション本文（見出し行含む） */
 function sectionContent(text, id) {
   const lines = text.split('\n');
-  const start = lines.findIndex((l) => l.startsWith(`## ${id}:`));
+  const start = lines.findIndex((l) => l.startsWith(`## ${id}`) || l.startsWith(`### ${id}`));
   if (start === -1) {
     return '';
   }
   let end = lines.length;
   for (let i = start + 1; i < lines.length; i++) {
-    if (lines[i].startsWith('## ')) {
+    if (lines[i].startsWith('## ') || lines[i].startsWith('### ')) {
       end = i;
       break;
     }
@@ -92,9 +95,15 @@ function main() {
   const first = files[0];
   const text = fs.readFileSync(path.join(PRODUCTS_DIR_ABS, first), 'utf8');
   const ids = sectionIds(text);
+  const layerIds = new Set(
+    text
+      .split('\n')
+      .filter((l) => l.startsWith('## '))
+      .map((l) => l.replace(/^## ([^:]+)(?::|$)/, '$1').trim()),
+  );
   const errors = [];
 
-  const missing = REQUIRED_IDS.filter((id) => !ids.includes(id));
+  const missing = REQUIRED_IDS.filter((id) => !ids.includes(id) && !layerIds.has(id));
   // D-look は frontend: true の場合のみ必須。frontend 自体は必須項目。
   const frontend = frontendValue(sectionContent(text, 'D-stack'));
   if (frontend === null) {

@@ -69,7 +69,7 @@ date: YYYY-MM-DD
 
 ## Body
 
-- Headings: `## <ID>: <Name>` only.
+- Headings: `## <Name>` only.
 - Content: bullet lists (`- `) only. No paragraphs, tables, code blocks, or quotes.
 - No inline formatting (bold, italic, links).
 - Write all content sentences in Japanese. Item labels, symbols, function names, IDs, and commands stay in English.
@@ -81,7 +81,7 @@ date: YYYY-MM-DD
 - One concept per bullet; keep each bullet and field to one short sentence unless the template specifies multiple bullets.
 - State each fact once; skip filler verdicts (e.g. ending every bullet with "correct").
 
-## R-what: Target
+## Target
 
 - Target: <target>
 - Background: <reason>
@@ -89,17 +89,32 @@ date: YYYY-MM-DD
 
 ## Check (ALL three viewpoints, in order)
 
-- Correctness
-  - <no findings> or one or more findings. Each finding uses the 5 fields below; keep `Finding` to one short sentence:
-    - ID: <C1, C2, ...>
-    - Severity: <high / medium / low>
-    - Finding: <finding>
-    - Recommendation: <recommendation>
-    - Source: <file:line>
-- Security
-  - <same as above, IDs: S1, S2, ...>
-- Maintainability
-  - <same as above, IDs: M1, M2, ...>
+### Correctness
+
+- <no findings> or one or more findings. Each finding uses the 5 fields below; keep `Finding` to one short sentence:
+  - ID: <C1, C2, ...>
+  - Severity: <high / medium / low>
+  - Finding: <finding>
+  - Recommendation: <recommendation>
+  - Source: <file:line>
+
+### Security
+
+- <no findings> or one or more findings. Each finding uses the 5 fields below; keep `Finding` to one short sentence:
+  - ID: <S1, S2, ...>
+  - Severity: <high / medium / low>
+  - Finding: <finding>
+  - Recommendation: <recommendation>
+  - Source: <file:line>
+
+### Maintainability
+
+- <no findings> or one or more findings. Each finding uses the 5 fields below; keep `Finding` to one short sentence:
+  - ID: <M1, M2, ...>
+  - Severity: <high / medium / low>
+  - Finding: <finding>
+  - Recommendation: <recommendation>
+  - Source: <file:line>
 
 ID rules:
 
@@ -112,7 +127,7 @@ Severity definitions:
 - medium: fix recommended. Potential issues or clear improvements. Mergeable but should be addressed
 - low: optional. Minor style or readability issues
 
-## A-verdict: Assessment
+## Assessment
 
 - Verdict: PASS / FAIL
 - Reason: <judgment reason>

@@ -30,17 +30,22 @@ const RULES: { skill: string; priority: number; keywords: string[] }[] = [
   {
     skill: 'feasibility',
     priority: 6,
-    keywords: ['実現可能', '実現性', 'フィージビリティ'],
+    keywords: ['実現可能', '実現性', 'フィージビリティ', '候補比較', '比較して', 'どれにする'],
+  },
+  {
+    skill: 'stack-adopt',
+    priority: 7,
+    keywords: ['追加拡張', '統合して', 'adopt', '採用して', 'runbook', '導入手順', 'ランブック'],
   },
   {
     skill: 'review',
-    priority: 7,
+    priority: 8,
     keywords: ['レビューし', 'コミットしよ', 'コミットして', 'コミット前に', 'チェックし'],
   },
-  { skill: 'session', priority: 8, keywords: ['次は何', '今セッション', 'スライス'] },
+  { skill: 'session', priority: 9, keywords: ['次は何', '今セッション', 'スライス'] },
   {
     skill: 'charter',
-    priority: 9,
+    priority: 10,
     keywords: [
       'チャーター',
       'charterし',

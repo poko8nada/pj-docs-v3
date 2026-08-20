@@ -17,26 +17,30 @@ changed:
 
 ## Body
 
-## G-what: What is this
+## Goal
+
+### G-what: What is this
 
 - <1 line: who + situation + need>
 - <why: 1-3 bullets>
 
-## G-outcome: Outcome
+### G-outcome: Outcome
 
 - <1 line outcome covenant>
 - <why: 1-3 bullets>
 
-## G-nongoal: Non-goal
+### G-nongoal: Non-goal
 
 - <expected-but-excluded>
 
-## D-name: Name
+## Discover
+
+### D-name: Name
 
 - <1 line: chosen name>
 - <why: 1-3 bullets>
 
-## D-look: Look
+### D-look: Look
 
 - <frontend look direction and traits; free-form, not limited to one line>
 - <why: 1-3 bullets>
@@ -44,39 +48,43 @@ changed:
 
 For products with `frontend: false` (API / DB / library / CLI), omit this section.
 
-## D-stack: Stack
+### D-stack: Stack
 
 - frontend: <true / false>
 - <area>: <choice>
 - <area>: <choice>
 
-## B-roadmap: Roadmap
+## Build
+
+### B-roadmap: Roadmap
 
 - MVP: <scope>
 - Next: <scope>
 
-## B-test: Test strategy
+### B-test: Test strategy
 
 - <base policy per references/test-guide.md>
 
-## B-deploy: Deploy / Publish
+### B-deploy: Deploy
 
 - MVP: <how it ships>
 - Next: <how it ships>
 
-Match the heading to the type (the ID stays `B-deploy`): web app / API → Deploy, library / CLI → Publish.
+Match the heading to the type: web app / API → Deploy, library / CLI → Publish.
 
-## B-scope: Scope
+### B-scope: Scope
 
 - <how far to build>
 
-## F-<domain>.<sub>: <feature name>
+### Feature
 
-- <feature definition>
+- F-<domain>.<sub>: <feature name>
+  - <feature definition>
 
-## C-<name>: <common unit name>
+### Common
 
-- <what it provides, in one line>
-- <why: 1-3 bullets>
+- C-<name>: <common unit name>
+  - <what it provides, in one line>
+  - <why: 1-3 bullets>
 
 Common units are optional: include them only when multiple features share the unit. Features depend on Common; Common is independent of features.

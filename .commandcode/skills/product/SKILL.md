@@ -45,17 +45,17 @@ Goal ←→ Discover → Build
    - `references/product-template.md` (structure)
    - `references/features-guide.md` and `references/test-guide.md` (content guides)
 3. Create the working document `products/YYYY-MM-DD-001.md` and build it by layer. Each layer is an agreement checkpoint: propose → discuss → obtain explicit agreement → write the agreed sections.
-   - **Goal layer** (G-what / G-outcome / G-nongoal): proposes a provisional outcome and boundary. It is confirmed after Discover.
-   - **Discover layer** (D-name / D-look / D-stack + features): the main work.
+   - **Goal layer** (## Goal → What / Outcome / Non-goal): proposes a provisional outcome and boundary. It is confirmed after Discover.
+   - **Discover layer** (## Discover → Name / Look / Stack + features): the main work.
      - Defines the product; may revise the Goal layer.
-     - D-look applies only when the product has a frontend (`frontend: true` in D-stack).
-     - D-stack is a decision checkpoint: when a choice is undecided, run the stack-eval skill with constraints extracted from G-what / G-outcome / B-deploy.
-     - After the runbook is executed, record the decision in D-stack.
+     - Look applies only when the product has a frontend (`frontend: true` in Stack).
+     - Stack is a decision checkpoint: when a choice is undecided, run the feasibility skill with constraints extracted from What / Outcome / Deploy.
+     - After the runbook is executed, record the decision in Stack.
      - Use `references/features-guide.md` for Features granularity.
      - Common units (`C-*`) are optional: add them only when multiple features share the unit (see `references/features-guide.md`).
-   - **Build layer** (B-roadmap / B-test / B-deploy / B-scope): follows from Discover.
-     - B-deploy heading is `Deploy` for web apps/APIs and `Publish` for libraries/CLIs (the ID stays `B-deploy`).
-     - Use `references/test-guide.md` for the B-test section.
+   - **Build layer** (## Build → Roadmap / Test / Deploy / Scope + Feature / Common): follows from Discover.
+     - Deploy heading is `Deploy` for web apps/APIs and `Publish` for libraries/CLIs.
+     - Use `references/test-guide.md` for the Test section.
 4. At the end, run the completeness check: `node scripts/check-complete.mjs` (from this skill's directory).
    - It verifies the working document has every required section ID and at least one feature, and that no snapshot #2+ exists before that.
    - Only when it passes, freeze the working document as v1.
@@ -73,7 +73,7 @@ Goal ←→ Discover → Build
 
 ## Relationship to charted headers
 
-- Code headers reference product sections via `FEATURES: <section ID>` (e.g., `FEATURES: F-auth.login`, `FEATURES: B-deploy`).
+- Code headers reference product sections via `FEATURES: <section ID>` (e.g., `FEATURES: F-auth.login`, `FEATURES: Deploy`).
 - When a section is renamed, split, or removed, check headers that reference it and propose updates.
 
 ## Limits

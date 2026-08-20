@@ -38,7 +38,7 @@ Optional after Usage: Configuration / API Reference / Table of Contents / Conten
 
 ### Copy
 
-- Overview: 2–4 sentences from G-what. Prerequisites: versions when known. Installation/Usage: copy-pasteable. License: one line.
+- Overview: 2–4 sentences from the Goal layer's What section. Prerequisites: versions when known. Installation/Usage: copy-pasteable. License: one line.
 - Badges: 3–6 factual (shields.io). Infer from repo; ask only when material and missing (license default MIT, version `0.1.0`).
 - Usage: derive from the features (F-\*) in the latest products/ snapshot.
 

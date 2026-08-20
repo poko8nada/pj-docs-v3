@@ -44,16 +44,16 @@ removed:
 
 ## Section IDs
 
-| Layer    | Section                                  | ID                                              |
-| -------- | ---------------------------------------- | ----------------------------------------------- |
-| Goal     | What is this / Outcome / Non-goal        | `G-what` / `G-outcome` / `G-nongoal`            |
-| Discover | Name / Look / Stack                      | `D-name` / `D-look` / `D-stack`                 |
-| Build    | Roadmap / Test strategy / Deploy / Scope | `B-roadmap` / `B-test` / `B-deploy` / `B-scope` |
-| Features | each feature                             | `F-<domain>.<sub>`                              |
-| Common   | each shared unit (optional)              | `C-<name>`                                      |
+| Layer    | Section                                  | ID                                      |
+| -------- | ---------------------------------------- | --------------------------------------- |
+| Goal     | What is this / Outcome / Non-goal        | `What` / `Outcome` / `Non-goal`         |
+| Discover | Name / Look / Stack                      | `Name` / `Look` / `Stack`               |
+| Build    | Roadmap / Test strategy / Deploy / Scope | `Roadmap` / `Test` / `Deploy` / `Scope` |
+| Features | each feature                             | `F-<domain>.<sub>`                      |
+| Common   | each shared unit (optional)              | `C-<name>`                              |
 
-- `D-look` applies only when the product has a frontend (`frontend: true` in D-stack; required in D-stack).
-- `B-deploy` heading is `Deploy` for web apps/APIs and `Publish` for libraries/CLIs; the ID stays `B-deploy`.
+- `Look` applies only when the product has a frontend (`frontend: true` in Stack; required in Stack).
+- `Deploy` heading is `Deploy` for web apps/APIs and `Publish` for libraries/CLIs.
 - `C-*` (Common) units are optional: shared components, the shared data model, and cross-cutting concerns that multiple features depend on. Features depend on Common; Common never depends on features.
 
 ## Format rules

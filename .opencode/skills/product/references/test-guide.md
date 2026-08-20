@@ -1,6 +1,6 @@
 # Test strategy guide
 
-The agreed base for the B-test section in products/ snapshots.
+The agreed base for the Test section in products/ snapshots.
 
 ## Base policy
 

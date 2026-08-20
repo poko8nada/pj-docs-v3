@@ -26,89 +26,133 @@ afterEach(() => {
   }
 });
 
-describe('validate-products', () => {
+describe('validate-products: changed', () => {
   it('changed に無いセクションの差分を検出する', () => {
     const dir = makeDir();
-    writeSnapshot(dir, 1, [], '## G-what: What is this\n\n- a\n');
-    writeSnapshot(dir, 2, [], '## G-what: What is this\n\n- b\n');
+    writeSnapshot(dir, 1, [], '## Goal\n\n### G-what: What is this\n\n- a\n');
+    writeSnapshot(dir, 2, [], '## Goal\n\n### G-what: What is this\n\n- b\n');
     const errors = collectErrors(dir);
     expect(errors.some((e) => e.includes('unchanged section G-what differs'))).toBe(true);
   });
 
   it('changed でセクションを変更できる', () => {
     const dir = makeDir();
-    writeSnapshot(dir, 1, [], '## G-what: What is this\n\n- a\n');
-    writeSnapshot(dir, 2, ['changed:', '  - G-what'], '## G-what: What is this\n\n- b\n');
+    writeSnapshot(dir, 1, [], '## Goal\n\n### G-what: What is this\n\n- a\n');
+    writeSnapshot(
+      dir,
+      2,
+      ['changed:', '  - G-what'],
+      '## Goal\n\n### G-what: What is this\n\n- b\n',
+    );
     expect(collectErrors(dir)).toEqual([]);
   });
 
+  it('removed も changed も無しでセクションが消えた場合をエラーにする', () => {
+    const dir = makeDir();
+    writeSnapshot(
+      dir,
+      1,
+      [],
+      '## Goal\n\n### G-what: What is this\n\n- a\n\n## Discover\n\n### D-name: Name\n\n- comeback\n',
+    );
+    writeSnapshot(dir, 2, [], '## Goal\n\n### G-what: What is this\n\n- a\n');
+    const errors = collectErrors(dir);
+    expect(errors.some((e) => e.includes('unchanged section D-name differs'))).toBe(true);
+  });
+});
+
+describe('validate-products: removed', () => {
   it('removed でセクションを削除できる', () => {
     const dir = makeDir();
-    writeSnapshot(dir, 1, [], '## G-what: What is this\n\n- a\n\n## D-name: Name\n\n- comeback\n');
-    writeSnapshot(dir, 2, ['removed:', '  - D-name'], '## G-what: What is this\n\n- a\n');
+    writeSnapshot(
+      dir,
+      1,
+      [],
+      '## Goal\n\n### G-what: What is this\n\n- a\n\n## Discover\n\n### D-name: Name\n\n- comeback\n',
+    );
+    writeSnapshot(
+      dir,
+      2,
+      ['removed:', '  - D-name'],
+      '## Goal\n\n### G-what: What is this\n\n- a\n',
+    );
     expect(collectErrors(dir)).toEqual([]);
   });
 
   it('removed + changed でセクションを改名できる', () => {
     const dir = makeDir();
-    writeSnapshot(dir, 1, [], '## G-what: What is this\n\n- a\n');
+    writeSnapshot(dir, 1, [], '## Goal\n\n### G-what: What is this\n\n- a\n');
     writeSnapshot(
       dir,
       2,
       ['removed:', '  - G-what', 'changed:', '  - G-outcome'],
-      '## G-outcome: Outcome\n\n- a\n',
+      '## Goal\n\n### G-outcome: Outcome\n\n- a\n',
     );
     expect(collectErrors(dir)).toEqual([]);
   });
 
   it('removed に無い ID をエラーにする', () => {
     const dir = makeDir();
-    writeSnapshot(dir, 1, [], '## G-what: What is this\n\n- a\n');
-    writeSnapshot(dir, 2, ['removed:', '  - D-name'], '## G-what: What is this\n\n- a\n');
+    writeSnapshot(dir, 1, [], '## Goal\n\n### G-what: What is this\n\n- a\n');
+    writeSnapshot(
+      dir,
+      2,
+      ['removed:', '  - D-name'],
+      '## Goal\n\n### G-what: What is this\n\n- a\n',
+    );
     const errors = collectErrors(dir);
     expect(errors.some((e) => e.includes('removed section D-name does not exist'))).toBe(true);
   });
 
   it('removed なのにセクションが残っている場合をエラーにする', () => {
     const dir = makeDir();
-    writeSnapshot(dir, 1, [], '## D-name: Name\n\n- comeback\n');
-    writeSnapshot(dir, 2, ['removed:', '  - D-name'], '## D-name: Name\n\n- comeback\n');
+    writeSnapshot(dir, 1, [], '## Discover\n\n### D-name: Name\n\n- comeback\n');
+    writeSnapshot(
+      dir,
+      2,
+      ['removed:', '  - D-name'],
+      '## Discover\n\n### D-name: Name\n\n- comeback\n',
+    );
     const errors = collectErrors(dir);
     expect(errors.some((e) => e.includes('removed section D-name still exists'))).toBe(true);
   });
+});
 
+describe('validate-products: removed edge cases', () => {
   it('removed と changed の重複をエラーにする', () => {
     const dir = makeDir();
-    writeSnapshot(dir, 1, [], '## G-what: What is this\n\n- a\n');
+    writeSnapshot(dir, 1, [], '## Goal\n\n### G-what: What is this\n\n- a\n');
     writeSnapshot(
       dir,
       2,
       ['removed:', '  - G-what', 'changed:', '  - G-what'],
-      '## G-what: What is this\n\n- b\n',
+      '## Goal\n\n### G-what: What is this\n\n- b\n',
     );
     const errors = collectErrors(dir);
     expect(errors.some((e) => e.includes('removed ID "G-what" overlaps changed'))).toBe(true);
   });
 
-  it('removed も changed も無しでセクションが消えた場合をエラーにする', () => {
-    const dir = makeDir();
-    writeSnapshot(dir, 1, [], '## G-what: What is this\n\n- a\n\n## D-name: Name\n\n- comeback\n');
-    writeSnapshot(dir, 2, [], '## G-what: What is this\n\n- a\n');
-    const errors = collectErrors(dir);
-    expect(errors.some((e) => e.includes('unchanged section D-name differs'))).toBe(true);
-  });
-
   it('不正な removed ID をエラーにする', () => {
     const dir = makeDir();
-    writeSnapshot(dir, 1, [], '## G-what: What is this\n\n- a\n');
-    writeSnapshot(dir, 2, ['removed:', '  - X-invalid'], '## G-what: What is this\n\n- a\n');
+    writeSnapshot(dir, 1, [], '## Goal\n\n### G-what: What is this\n\n- a\n');
+    writeSnapshot(
+      dir,
+      2,
+      ['removed:', '  - X-invalid'],
+      '## Goal\n\n### G-what: What is this\n\n- a\n',
+    );
     const errors = collectErrors(dir);
     expect(errors.some((e) => e.includes('invalid removed ID "X-invalid"'))).toBe(true);
   });
 
   it('先頭スナップショットの removed をエラーにする', () => {
     const dir = makeDir();
-    writeSnapshot(dir, 1, ['removed:', '  - D-name'], '## G-what: What is this\n\n- a\n');
+    writeSnapshot(
+      dir,
+      1,
+      ['removed:', '  - D-name'],
+      '## Goal\n\n### G-what: What is this\n\n- a\n',
+    );
     const errors = collectErrors(dir);
     expect(errors.some((e) => e.includes('removed has no effect in the first snapshot'))).toBe(
       true,
