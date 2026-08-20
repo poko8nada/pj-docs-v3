@@ -49,7 +49,7 @@ Verify and complete the candidate's finding file. Reuse the Phase 1 scaffold and
 
 1. Read the finding file and the scaffold under `.stack-eval/<slug>/`.
 2. Cross-check every Footprint / Config surface / Init story / Maintenance claim against the actual scaffold and files. Fix numbers and facts that mismatch.
-3. Check format compliance: heading IDs, bullet-only content, no inline formatting, frontmatter has `date` only.
+3. Check format compliance per Body rules.
 4. Fill any missing fields; finalize the Recommendation.
 5. The result must be a complete, verified candidate section. Report what you changed.
 
@@ -84,6 +84,12 @@ Append the adoption runbook to the finding file. The main agent passes the adopt
 - No inline formatting (bold, italic, links).
 - Write all content sentences in Japanese. Item labels, symbols, function names, IDs, and commands stay in English.
 - Keep the sections that Phase 1 created; append `## R-runbook: Adoption runbook` only in runbook phase.
+
+## Writing quality
+
+- Write in natural Japanese. Keep English only for identifiers, file paths, commands, and technical terms without a natural Japanese equivalent.
+- One concept per bullet; keep each bullet and field to one short sentence unless the template specifies multiple bullets.
+- State each fact once; skip filler verdicts (e.g. ending every bullet with "correct").
 
 ## Return
 

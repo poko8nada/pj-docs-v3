@@ -48,7 +48,6 @@ Create the file given in the mission's `Output` field (`findings/feasibility/YYY
 
 - Create the directory when it is missing.
 - Use the assigned file path as-is; the main agent has already allocated a unique `seq`.
-- The seq resets daily (the first file of a day is `YYYY-MM-DD-001.md`); infer the seq from today's files only.
 - Write only to a new file.
 
 ## Frontmatter
@@ -70,6 +69,12 @@ date: YYYY-MM-DD
 - Write all content sentences in Japanese. Item labels, symbols, function names, IDs, and commands stay in English.
 - Use exactly the structure and labels below; keep the sections and bullets as given.
 
+## Writing quality
+
+- Write in natural Japanese. Keep English only for identifiers, file paths, commands, and technical terms without a natural Japanese equivalent.
+- One concept per bullet; keep each bullet and field to one short sentence unless the template specifies multiple bullets.
+- State each fact once; skip filler verdicts (e.g. ending every bullet with "correct").
+
 ## R-what: Request
 
 - Target: <target>
@@ -81,8 +86,8 @@ date: YYYY-MM-DD
 - ID: <F1, F2, ...>
 - Severity: <high / medium / low>
 - Finding: <finding>
-- Impact: <impact>
-- Risk: <risk>
+- Impact: <what happens if ignored>
+- Risk: <uncertainty or failure likelihood>
 - Recommendation: <recommendation>
 - Source: <source URL>
 

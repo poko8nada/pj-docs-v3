@@ -46,10 +46,7 @@ Evaluate by an actual scaffold. The scaffold lives in the project-local director
 
 1. Create `.stack-eval/<slug>/` under the project root (`mkdir -p`). The main agent created the parent and gitignored it; leave `.gitignore` to the main agent.
 2. Prefer the official additive CLI (e.g. `next init`, `shadcn init`) when one exists; otherwise scaffold the official starter (e.g. `create-*` or `degit`) into the directory. Use non-interactive flags.
-3. Record:
-   - Footprint: file count, tree shape, dependency count and rough install size
-   - Config surface: which root config files are created and what they control
-   - Init story: whether an official additive CLI exists for existing projects
+3. Record the C-candidate fields (below) from the scaffold.
 4. Keep the scaffold in place; the main agent removes `.stack-eval/` after the runbook is appended.
 
 ## Research
@@ -65,7 +62,7 @@ Create the file given in the mission's `Output` field:
 - Create the directory when it is missing.
 - Use the assigned file path as-is; the main agent has already allocated a unique `seq` and slug.
 - Write only to a new file; touch only your assigned candidate's files.
-- The file must be **complete** when you finish: every field of the candidate section filled with researched facts. Fill every field before finishing.
+- The file must be **complete** when you finish: every field of the candidate section filled with researched facts.
 
 ## Frontmatter
 
@@ -86,6 +83,12 @@ date: YYYY-MM-DD
 - Write all content sentences in Japanese. Item labels, symbols, function names, IDs, and commands stay in English.
 - Use exactly the structure and labels below; keep the sections and bullets as given.
 
+## Writing quality
+
+- Write in natural Japanese. Keep English only for identifiers, file paths, commands, and technical terms without a natural Japanese equivalent.
+- One concept per bullet; keep each bullet and field to one short sentence unless the template specifies multiple bullets.
+- State each fact once; skip filler verdicts (e.g. ending every bullet with "correct").
+
 ## R-what: Request
 
 - Target: <target>
@@ -95,7 +98,7 @@ date: YYYY-MM-DD
 ## C-candidate: Candidate
 
 - Name: <candidate name>
-- Footprint: <file count, tree shape, dependency count>
+- Footprint: <file count, tree shape, dependency count, rough install size>
 - Config surface: <root config files and what they control>
 - Init story: <official additive CLI availability for existing projects>
 - Maintenance: <release cadence, ecosystem health, known issues>

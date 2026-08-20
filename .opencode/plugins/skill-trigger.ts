@@ -15,7 +15,11 @@ import * as path from 'node:path';
 // 順位の考え方: より特化（ニッチ）したスキルほど上位。汎用の入口（charter）は最下位
 const RULES: { skill: string; priority: number; keywords: string[] }[] = [
   { skill: 'look-workshop', priority: 1, keywords: ['look', 'ルック', 'workshopで', '見た目'] },
-  { skill: 'skill-sync', priority: 2, keywords: ['スキルの同期', '同期して', 'skill-sync'] },
+  {
+    skill: 'meta-md-sync',
+    priority: 2,
+    keywords: ['スキルの同期', 'エージェント同期', '同期して', 'meta-md-sync'],
+  },
   {
     skill: 'meta-md-audit',
     priority: 3,

@@ -39,13 +39,9 @@ The main agent passes a mission with four fields. Use them as-is:
 - Constraints: <review scope and assumptions>
 - Output: <assigned file path>
 
-## Changes
-
-Run `git diff` to obtain the changes to review. If the mission specifies staged changes, run `git diff --cached` instead.
-
 ## Research
 
-1. Run `git diff` to obtain the changes.
+1. Run `git diff` to obtain the changes to review. If the mission specifies staged changes, run `git diff --cached` instead.
 2. Read the changed files (read / glob / grep / list) for context when needed.
 3. Verify library usage against official docs (context7) and external references (websearch / webfetch). Prefer context7 for library APIs; fetch source code only when context7 is insufficient.
 4. Verify every claim against a source; rely on sources, not memory.
@@ -58,7 +54,6 @@ Create the file given in the mission's `Output` field (`findings/review/YYYY-MM-
 
 - Create the directory when it is missing.
 - Use the assigned file path as-is; the main agent has already allocated a unique `seq` per sub-agent.
-- The seq resets daily (the first file of a day is `YYYY-MM-DD-001.md`); infer the seq from today's files only.
 - Write only to a new file.
 
 ## Frontmatter
@@ -80,6 +75,12 @@ date: YYYY-MM-DD
 - Write all content sentences in Japanese. Item labels, symbols, function names, IDs, and commands stay in English.
 - Use exactly the structure and labels below; keep the sections and bullets as given.
 
+## Writing quality
+
+- Write in natural Japanese. Keep English only for identifiers, file paths, commands, and technical terms without a natural Japanese equivalent.
+- One concept per bullet; keep each bullet and field to one short sentence unless the template specifies multiple bullets.
+- State each fact once; skip filler verdicts (e.g. ending every bullet with "correct").
+
 ## R-what: Target
 
 - Target: <target>
@@ -89,7 +90,7 @@ date: YYYY-MM-DD
 ## Check (ALL three viewpoints, in order)
 
 - Correctness
-  - <no findings> or one or more findings (repeat the 5 fields below):
+  - <no findings> or one or more findings. Each finding uses the 5 fields below; keep `Finding` to one short sentence:
     - ID: <C1, C2, ...>
     - Severity: <high / medium / low>
     - Finding: <finding>

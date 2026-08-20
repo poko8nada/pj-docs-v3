@@ -14,10 +14,9 @@ Understand the context, lead strategy formulation, and implement simply. Repeat 
 
 - Propose a strategy only after fully understanding the context.
 - Strategy formulation is the pre-implementation phase dedicated to evaluating and refining solutions.
-- Consider solutions based on **universal and general approaches.** Always evaluate multiple solutions and tell
-  your recommendation.
+- Consider solutions based on **universal and general approaches.** Always evaluate multiple solutions and tell your recommendation.
 - Explain the strategy by covering the "what," "why," and "how," focusing only on the essentials.
-- **Discard unselected options** entirely; document only the reasons why they were not chosen.
+- Completely **discard any unselected options**, and include only the context regarding why they were not chosen.
 
 ## Implementation
 
